@@ -93,7 +93,7 @@ extension MGFeedDetailController: UITableViewDelegate, UITableViewDataSource {
         
         let dateFormatterGet = DateFormatter()
         dateFormatterGet.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
-        let stringFromDate = dateFormatterGet.string(from: feedDataItem.author_pubDate ?? Date())
+//        let stringFromDate = dateFormatterGet.string(from: feedDataItem.author_pubDate ?? Date())
 //        let pubDate = DateFormatter.formatedDate(dateString: stringFromDate, fromFormat: "yyyy-MM-dd HH:mm:ss Z", toFormat: "dd MMM yyyy")
 //        cell.itemDateAuthorLabel.text = pubDate
 //        cell.itemDateAuthorLabel.textColor = UIColor("#F3F7F8")
