@@ -2,10 +2,8 @@ use_frameworks!
 
 target 'MGFeedKit_Example' do
   pod 'MGFeedKit', :path => '../'
-
-  target 'MGFeedKit_Tests' do
-    inherit! :search_paths
-
-    
-  end
+  pod 'GSImageViewerController'
+  pod 'FeedKit', '~> 8.0'
+  pod 'SwiftSoup'
+  pod 'SDWebImage'
 end

@@ -1,0 +1,6 @@
+framework module MGFeedKit {
+  umbrella header "MGFeedKit-umbrella.h"
+
+  export *
+  module * { export * }
+}
