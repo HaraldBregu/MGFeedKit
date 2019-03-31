@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'MGFeedKit_Example' do
+  pod 'MGFeedKit', :path => '../'
+
+  target 'MGFeedKit_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
