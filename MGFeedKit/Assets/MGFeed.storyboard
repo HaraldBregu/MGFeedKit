@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="0Hv-UG-YdI">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -20,7 +20,7 @@
         <!--Feed Controller-->
         <scene sceneID="NJg-62-OUG">
             <objects>
-                <viewController storyboardIdentifier="MGFeedController" id="bVt-3y-zZA" customClass="MGFeedController" customModule="MGFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MGFeedController" id="bVt-3y-zZA" customClass="MGFeedController" customModule="MGFeedKit" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ihF-1I-eMw">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -29,7 +29,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MGFeedViewCell" rowHeight="379" id="gFd-aE-g0Q" customClass="MGFeedViewCell" customModule="MGFeed" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MGFeedViewCell" rowHeight="379" id="gFd-aE-g0Q" customClass="MGFeedViewCell" customModule="MGFeedKit" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="379"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="gFd-aE-g0Q" id="LpN-40-7UH">
@@ -106,7 +106,7 @@
         <!--Feed Detail Controller-->
         <scene sceneID="UCl-4J-jU5">
             <objects>
-                <viewController storyboardIdentifier="MGFeedDetailController" id="gYT-9y-W3a" customClass="MGFeedDetailController" customModule="MGFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MGFeedDetailController" id="gYT-9y-W3a" customClass="MGFeedDetailController" customModule="MGFeedKit" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="OY1-t6-6Cl">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -115,7 +115,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MGFeedDetailViewCell" rowHeight="489" id="rSi-op-feL" customClass="MGFeedDetailViewCell" customModule="MGFeed" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MGFeedDetailViewCell" rowHeight="489" id="rSi-op-feL" customClass="MGFeedDetailViewCell" customModule="MGFeedKit" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="489"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="rSi-op-feL" id="nNK-T3-Edh">
