@@ -25,23 +25,13 @@
 
 import Foundation
 
-public class MGFeedDataItem {
-    
+public class MGFeedItem {
     public var title:String!
-    
     public var imageUrl:String!
-    
     public var author_pubDate:Date?
-    
     public var itemDescription:String!
-    
     public var itemUrl:String!
-    
-    public init(title:String, imageUrl:String, itemUrl:String, author_pubDate:Date, itemDescription: String) {
-        self.title = title
-        self.imageUrl = imageUrl
-        self.itemUrl = itemUrl
-        self.author_pubDate = author_pubDate
-        self.itemDescription = itemDescription
+    public init() {
+        
     }
 }

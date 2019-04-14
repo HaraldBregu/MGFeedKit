@@ -27,39 +27,45 @@ import UIKit
 import SDWebImage
 import GSImageViewerController
 
-/// :nodoc:
+
 class MGFeedDetailController: UIViewController {
     @IBOutlet var tableView: UITableView!
-    public var feedDataItem:MGFeedDataItem!
+    public var item:MGFeedItem!
+    public var assets:MGAsset!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-//        view.backgroundColor = UIColor("#15161D")
+        
+        title = assets.string.title
+        navigationItem.title = assets.string.title
+        
+        view.backgroundColor = assets.color.backgroundView
+        navigationController?.navigationBar.tintColor = assets.color.navigationBarTint
+        navigationController?.navigationBar.barTintColor = assets.color.navigationBar
         navigationController?.navigationBar.isTranslucent = false
-//        navigationController?.navigationBar.barTintColor = UIColor("#15161D")
-        navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.barStyle = .black
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(image: optionImage, style: .plain, target: self, action: #selector(shareFeedItem))
-//        tableView.backgroundColor = UIColor("#15161D")
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .never
+        //navigationItem.rightBarButtonItem = UIBarButtonItem(image: optionImage, style: .plain, target: self, action: #selector(shareFeedItem))
+
         tableView.tableHeaderView = UIView()
         tableView.tableFooterView = UIView()
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 40
+        tableView.backgroundColor = assets.color.backgroundTableView
+        tableView.separatorInset = UIEdgeInsets(top: 0, left: 112 + 25, bottom: 0, right: 0)
+        tableView.separatorColor = assets.color.tableViewSeparator
     }
     
     @objc func shareFeedItem() {
         
-        let items = [feedDataItem.itemUrl!]
+        let items = [item.itemUrl!]
         let activityIndicator = UIActivityViewController(activityItems: items, applicationActivities: nil)
         present(activityIndicator, animated: true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        tableView.reloadData()
-        navigationController?.navigationBar.prefersLargeTitles = false
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -73,7 +79,6 @@ class MGFeedDetailController: UIViewController {
 
 }
 
-/// :nodoc:
 extension MGFeedDetailController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -85,11 +90,11 @@ extension MGFeedDetailController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell(frame: .zero)
         }
         
-        cell.itemTitleLabel.text = feedDataItem.title
+        cell.itemTitleLabel.text = item.title
 
         cell.itemImageView.sd_setShowActivityIndicatorView(true)
         cell.itemImageView.sd_setIndicatorStyle(.white)
-        cell.itemImageView.sd_setImage(with: URL(string: feedDataItem.imageUrl))
+        cell.itemImageView.sd_setImage(with: URL(string: item.imageUrl))
         
         let dateFormatterGet = DateFormatter()
         dateFormatterGet.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
@@ -108,12 +113,15 @@ extension MGFeedDetailController: UITableViewDelegate, UITableViewDataSource {
 //            self.present(imageViewer, animated: true, completion: nil)
 //        }
         
+        cell.backgroundColor = assets.color.backgroundViewCell
+        cell.contentView.backgroundColor = assets.color.backgroundViewCell
+        cell.itemTitleLabel.textColor = assets.color.cellTint
+
         return cell
     }
 }
 
 
-/// :nodoc:
 extension MGFeedDetailController {
     
 //    private var shareImage:UIImage {

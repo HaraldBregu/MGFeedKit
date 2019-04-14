@@ -13,17 +13,38 @@ import MGFeedKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var feed:MGFeed!
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
-        let data = MGFeedData(title: "The Next Web", urlString: "https://thenextweb.com/feed/")
+//        let data = MGFeedData(title: "The Next Web", urlString: "https://thenextweb.com/feed/")
 //        let data = MGFeedData(title: "Tech Crunch", urlString: "https://techcrunch.com/feed/")
 //        let data = MGFeedData(title: "The Verge", urlString: "https://www.theverge.com/rss/index.xml")
 //        let data = MGFeedData(title: "Digital Trend", urlString: "https://www.digitaltrends.com/feed/")
 
-        feed = MGFeed(data: data)
-        window?.rootViewController = UINavigationController(rootViewController: feed.controller)
+        let controller = MGFeedController.instance
+        
+        let data = MGFeed()
+        data.url = "https://thenextweb.com/feed/"
+        controller.data = data
+        
+        let asset = MGAsset()
+        let string = MGString()
+        string.title = "The Next Web"
+        asset.string = string
+        
+        let color = MGColor()
+        color.backgroundView = .black
+        color.navigationBar = .black
+        color.navigationBarTint = .white
+        color.toolBar = .black
+        color.toolBarTint = .white
+        color.backgroundViewCell = .black
+        color.cellTint = .white
+        asset.color = color
+        
+        controller.assets = asset
+        
+        window?.rootViewController = UINavigationController(rootViewController: controller)
         window?.makeKeyAndVisible()
         return true
     }

@@ -34,10 +34,7 @@ class MGFeedDetailViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
-//        backgroundColor = UIColor("#15161D")
-//        contentView.backgroundColor = UIColor("#15161D")
-//        itemTitleLabel.textColor = UIColor("#F3F7F8")
+
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {

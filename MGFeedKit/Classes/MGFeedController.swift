@@ -30,34 +30,35 @@ import SDWebImage
 
 public class MGFeedController: UIViewController {
     @IBOutlet var tableView: UITableView!
+    
+    public var data:MGFeed!
+    public var assets:MGAsset!
+    
+    var items = [MGFeedItem]()
+    var filteredItems = [MGFeedItem]()
+   
+    var activityIndicatorView:UIActivityIndicatorView!
     var searchController:UISearchController!
-    var feedData: MGFeedData!
-    var feedDataItems = [MGFeedDataItem]()
-    var filterFeedDataItems = [MGFeedDataItem]()
-    var didTapMenu:((MGFeedController) -> ()) = { _ in }
-
+    var refreshControl:UIRefreshControl = UIRefreshControl()
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        title = feedData.title
-        navigationItem.title = feedData.title
-//        view.backgroundColor = UIColor("#15161D")
+        title = assets.string.title
+        navigationItem.title = assets.string.title
+        
+        view.backgroundColor = assets.color.backgroundView
+        navigationController?.navigationBar.tintColor = assets.color.navigationBarTint
+        navigationController?.navigationBar.barTintColor = assets.color.navigationBar
         navigationController?.navigationBar.isTranslucent = false
-//        navigationController?.navigationBar.barTintColor = UIColor("#15161D")
-//        navigationController?.navigationBar.tintColor = UIColor("#F3F7F8")
         navigationController?.navigationBar.barStyle = .black
         navigationController?.navigationBar.prefersLargeTitles = true
-
-//        let icon: IoniconsType = IoniconsType.naviconRound
-//        let image = UIImage(icon: .ionicons(icon), size: CGSize(width: 34, height: 34), textColor: .white)
-//        let menuBarButtonItem = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(revealMenuViewcontroller))
-//        navigationItem.leftBarButtonItem = menuBarButtonItem
 
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
-//        searchController.searchBar.placeholder = "mg.feedlist.nav.search.title".localized
-//        searchController.searchBar.tintColor = UIColor("#F3F7F8")
+        searchController.searchBar.placeholder = assets.string.searchBarPlaceholder
+        searchController.searchBar.tintColor = .red
 
         definesPresentationContext = true
         navigationItem.searchController = searchController
@@ -68,152 +69,222 @@ public class MGFeedController: UIViewController {
         tableView.tableFooterView = UIView()
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 40
-//        tableView.backgroundColor = UIColor("#15161D")
+        tableView.backgroundColor = assets.color.backgroundTableView
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 112 + 25, bottom: 0, right: 0)
-//        tableView.separatorColor = UIColor("#F3F7F8")
+        tableView.separatorColor = assets.color.tableViewSeparator
+        refreshControl.tintColor = assets.color.refreshTint
+        refreshControl.addTarget(self, action: #selector(reloadData(button:)), for: .valueChanged)
         tableView.refreshControl = refreshControl
 
-        activityIndicatorView.style = .white
+        activityIndicatorView = UIActivityIndicatorView(style: .gray)
         activityIndicatorView.center = tableView.center
+        view.addSubview(activityIndicatorView)
 
-//        refreshControl.tintColor = UIColor("#15161D")
-//        refreshControl.addAction(for: .touchUpInside) { [unowned self] in
-//            self.setFeed(self.feedData)
-//        }
-        self.setFeed(self.feedData)
+        setFeed(data)
     }
  
-    override public func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.toolbar.isTranslucent = false
-//        navigationController?.navigationBar.barTintColor = UIColor("#15161D")
-//        navigationController?.navigationBar.tintColor = UIColor("#F3F7F8")
+    @objc private func reloadData(button:UIButton) {
+        refreshControl.endRefreshing()
+        setFeed(data)
     }
     
-    override public func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-    
-    private func setFeed(_ feedData: MGFeedData) {
-        
-        startActivityIndicatorView()
-        
-        var feedURL = URL(string: feedData.urlString) ?? URL(string: "https://google.com/")!
-        let parser = FeedParser(URL: feedURL)
+    private func setFeed(_ data: MGFeed) {
+        guard let url = URL(string: data.url) else { return }
+        activityIndicatorView.startAnimating()
+        let parser = FeedParser(URL: url)
         parser.parseAsync(queue: .global(qos: .userInitiated)) { [unowned self] (result) in
             switch result {
-            case .atom(let atomFeed):
-                var newFeedDataItems = [MGFeedDataItem]()
-                atomFeed.entries?.forEach({ (atomFeedItem) in
-                    if let html = atomFeedItem.content?.value {
-                        do {
-                            let doc: Document = try SwiftSoup.parse(html)
-                            let link: Element = try doc.select("img").first()!
-                            let linkHref: String = try link.attr("src")
-                            newFeedDataItems.append(MGFeedDataItem(title: atomFeedItem.title ?? "", imageUrl: linkHref, itemUrl: atomFeedItem.id ?? "", author_pubDate: atomFeedItem.published ?? Date(), itemDescription: html))
-                        } catch Exception.Error(let type, let message) {
-                            print(type)
-                            print(message)
-                        } catch let error {
-                            print(error)
-                        }
-                    }
-                })
-                self.feedDataItems = newFeedDataItems
-                DispatchQueue.main.async {
-                    self.stopActivityIndicatorView()
-                    self.refreshControl.endRefreshing()
-                    self.tableView.reloadData()
-                }
+            case .atom(let feed):
+                self.atomFeed(feed)
                 break
-            case .rss(let rssFeed):
-                var newFeedDataItems = [MGFeedDataItem]()
-                rssFeed.items?.forEach({ (rssFeedItem) in
-                    let description = rssFeedItem.description ?? ""
-                    let contentEncoded = rssFeedItem.content?.contentEncoded ?? ""
-                    
-                    func imageUrlFrom(htmlString: String) -> String? {
-                        var document:Document!
-                        do {
-                            document = try SwiftSoup.parse(htmlString)
-                        } catch Exception.Error(let type, let message) {
-                            print(type, message)
-                        } catch let error {
-                            print(error)
-                        }
-                        
-                        var links:Elements!
-                        do {
-                            links = try document.select("img")
-                        } catch Exception.Error(let type, let message) {
-                            print(type, message)
-                        } catch let error {
-                            print(error)
-                        }
-                        
-                        var imageLink:String? = nil
-                        if let link = links.first() {
-                            do {
-                                imageLink = try link.attr("src")
-                                return imageLink
-                            } catch Exception.Error(let type, let message) {
-                                print(type, message)
-                            } catch let error {
-                                print(error)
-                            }
-                        }
-                        return imageLink
-                    }
-                    
-                    var url:String = ""
-                    if let imgUrl = imageUrlFrom(htmlString: description) {
-                        url = imgUrl
-                    } else if let imgUrl = imageUrlFrom(htmlString: contentEncoded) {
-                        url = imgUrl
-                    } else if let mediaThumbnailUrl = rssFeedItem.media?.mediaThumbnails?.first?.attributes?.url {
-                        url = mediaThumbnailUrl
-                    } else if let enclosureUrl = rssFeedItem.enclosure?.attributes?.url {
-                        url = enclosureUrl
-                    }
-                    
-                    newFeedDataItems.append(MGFeedDataItem(title: rssFeedItem.title ?? "", imageUrl: url, itemUrl: rssFeedItem.link ?? "", author_pubDate: rssFeedItem.pubDate ?? Date(), itemDescription: description))
-                })
-                self.feedDataItems = newFeedDataItems
-                DispatchQueue.main.async {
-                    self.stopActivityIndicatorView()
-                    self.refreshControl.endRefreshing()
-                    self.tableView.reloadData()
-                }
+            case .rss(let feed):
+                self.rssFeed(feed)
                 break
             case .json: break
             case .failure: break
             }
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+                if self.activityIndicatorView.isAnimating {
+                    self.activityIndicatorView.stopAnimating()
+                }
+            }
         }
     }
     
-    @objc private func revealMenuViewcontroller() {
-        didTapMenu(self)
+    private func atomFeed(_ feed:AtomFeed) {
+        var newItems = [MGFeedItem]()
+        feed.entries?.forEach({ (feedItem) in
+            if let html = feedItem.content?.value {
+                do {
+                    let doc: Document = try SwiftSoup.parse(html)
+                    let link: Element = try doc.select("img").first()!
+                    let linkHref: String = try link.attr("src")
+
+                    let item = MGFeedItem()
+                    item.title = feedItem.title ?? ""
+                    item.imageUrl = linkHref
+                    item.itemUrl = feedItem.id ?? ""
+                    item.author_pubDate = feedItem.published ?? Date()
+                    item.itemDescription = html
+                    newItems.append(item)
+                } catch Exception.Error( _, _) {
+                    //print(type)
+                    //print(message)
+                } catch _ {
+                    //print(error)
+                }
+            }
+        })
+        self.items = newItems
     }
     
-    private var refreshControl:UIRefreshControl {
-        let refreshControl = UIRefreshControl()
-        return refreshControl
-    }
-    
-    lazy var activityIndicatorView:UIActivityIndicatorView = {
-        let activityIndicatorView = UIActivityIndicatorView(style: .gray)
-        activityIndicatorView.center = view.center
-        return activityIndicatorView
-    }()
-    
-    public func startActivityIndicatorView() {
-        view.addSubview(activityIndicatorView)
-        activityIndicatorView.startAnimating()
-    }
-    
-    public func stopActivityIndicatorView() {
-        activityIndicatorView.removeFromSuperview()
-        activityIndicatorView.stopAnimating()
+    private func rssFeed(_ feed:RSSFeed) {
+        var newItems = [MGFeedItem]()
+        feed.items?.forEach({ (feedItem) in
+            let description = feedItem.description ?? ""
+            let contentEncoded = feedItem.content?.contentEncoded ?? ""
+            
+            func imageUrlFrom(htmlString: String) -> String? {
+                var document:Document!
+                do {
+                    document = try SwiftSoup.parse(htmlString)
+                } catch Exception.Error(_, _) {
+                    //print(type, message)
+                } catch _ {
+                    //print(error)
+                }
+                
+                var links:Elements!
+                do {
+                    links = try document.select("img")
+                } catch Exception.Error(_, _) {
+                    //print(type, message)
+                } catch _ {
+                    //print(error)
+                }
+                
+                var imageLink:String? = nil
+                if let link = links.first() {
+                    do {
+                        imageLink = try link.attr("src")
+                        return imageLink
+                    } catch Exception.Error(_, _) {
+                        //print(type, message)
+                    } catch _ {
+                        //print(error)
+                    }
+                }
+                return imageLink
+            }
+            
+            var url:String = ""
+            if let imgUrl = imageUrlFrom(htmlString: description) {
+                url = imgUrl
+            } else if let imgUrl = imageUrlFrom(htmlString: contentEncoded) {
+                url = imgUrl
+            } else if let mediaThumbnailUrl = feedItem.media?.mediaThumbnails?.first?.attributes?.url {
+                url = mediaThumbnailUrl
+            } else if let enclosureUrl = feedItem.enclosure?.attributes?.url {
+                url = enclosureUrl
+            }
+            
+            let item = MGFeedItem()
+            item.title = feedItem.title ?? ""
+            item.imageUrl = url
+            item.itemUrl = feedItem.link ?? ""
+            item.author_pubDate = feedItem.pubDate ?? Date()
+            item.itemDescription = description
+            newItems.append(item)
+        })
+        self.items = newItems
     }
 }
+
+extension MGFeedController: UITableViewDelegate, UITableViewDataSource {
+    
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return isFiltering ? filteredItems.count : items.count
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "MGFeedViewCell") as? MGFeedViewCell else {
+            return UITableViewCell(style: .default, reuseIdentifier: "cell")
+        }
+        
+        let item = isFiltering ? filteredItems[indexPath.row] : items[indexPath.row]
+        
+        cell.itemImageView.sd_setShowActivityIndicatorView(true)
+        cell.itemImageView.sd_setIndicatorStyle(.white)
+        cell.itemImageView.sd_setImage(with: URL(string: item.imageUrl))
+        
+        cell.itemTitleLabel.text = item.title
+        //cell.itemDescriptionContentLabel.text = feedItem.itemDescription.byConvertingHTMLToPlainText()
+        
+        cell.backgroundColor = assets.color.backgroundViewCell
+        cell.contentView.backgroundColor = assets.color.backgroundViewCell
+        cell.itemTitleLabel.textColor = assets.color.cellTint
+        cell.itemDescriptionContentLabel.textColor = assets.color.cellTint
+        
+        cell.layoutIfNeeded()
+        return cell
+    }
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let controller = storyboard?.instantiateViewController(withIdentifier: "MGFeedDetailController") as? MGFeedDetailController {
+            let item = isFiltering ? filteredItems[indexPath.row] : items[indexPath.row]
+            controller.item = item
+            controller.assets = assets
+            navigationController?.pushViewController(controller, animated: true)
+        }
+    }
+    
+}
+
+extension MGFeedController {
+    
+    var isFiltering: Bool {
+        return searchController.isActive && !searchBarIsEmpty
+    }
+    
+    var searchBarIsEmpty:Bool {
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
+    
+    func filterContentForSearchText(_ searchText: String) {
+        filteredItems = items.filter({( item : MGFeedItem) -> Bool in
+            return item.title.lowercased().contains(searchText.lowercased())
+        })
+        tableView.reloadData()
+    }
+    
+}
+
+extension MGFeedController: UISearchResultsUpdating {
+    
+    public func updateSearchResults(for searchController: UISearchController) {
+        filterContentForSearchText(searchController.searchBar.text!)
+    }
+}
+
+
+extension MGFeedController {
+    
+    public static var instance: MGFeedController {
+        let podBundle = Bundle(for: MGFeedController.self)
+        let bundleURL = podBundle.url(forResource: resourceName, withExtension: resourceExtension)
+        let bundle = Bundle(url: bundleURL!) ?? Bundle()
+        let storyboard = UIStoryboard(name: storyboardName, bundle: bundle)
+        guard let controller = storyboard.instantiateViewController(withIdentifier: controllerIdentifier) as? MGFeedController else {
+            return MGFeedController()
+        }
+        return controller
+    }
+    
+}
+
+fileprivate let storyboardName = "MGFeed"
+fileprivate let controllerIdentifier = "MGFeedController"
+fileprivate let resourceName = "MGFeedKit"
+fileprivate let resourceExtension = "bundle"

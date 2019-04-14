@@ -24,77 +24,58 @@
 //
 
 import Foundation
-/// Component APIs
-public class MGFeed {
-    
-    /**
-     Initializes a new feed with the provided data.
-     
-     - Parameters: all parameter to pass in the MGFeed object
-     - data: The data to pass in the initializer
-     
-     - Returns: The module component
-     */
-    public init(data: MGFeedData) {
-        feedData = data
-        controller = _controller
-        controller.feedData = data
-        controller.didTapMenu = { feedController in
-            self.didCloseFeed(self)
-        }
-    }
-    
-    /**
-     This is the initial view controller of the module MGFeed.
-     
-     - Returns: The initial view controller
-     */
-    public var controller: MGFeedController!
-    
-    /**
-     This is data passed to the initialised object MGFeed.
-     
-     - Returns: The data
-     */
-    public var feedData:MGFeedData!
-    
-    /**
-     This closure is called only when the MGFeed module is closed.
-     
-     - Returns: Closed module
-     */
-    public var didCloseFeed:((MGFeed) -> ())!
-    
-    private var _controller: MGFeedController? {
-        return _initialViewController as? MGFeedController
-    }
-    
-    private var _initialViewController: UIViewController {
-        return _storyboard.instantiateViewController(withIdentifier: _initialViewControllerIdentifier)
-    }
-    
-    private var _initialViewControllerIdentifier:String {
-        return initialViewControllerIdentifier
-    }
-    
-    private var _storyboard:UIStoryboard {
-        return UIStoryboard(name: _storyboardName, bundle: _storyboardBundle)
-    }
-    
-    private var _storyboardName:String {
-        return storyboardName
-    }
-    
-    private var _storyboardBundle:Bundle {
-        let podBundle = Bundle(for: MGFeed.self)
-        let bundleURL = podBundle.url(forResource: resourceName, withExtension: resourceExtension)
-        let bundle = Bundle(url: bundleURL!)!
-        return bundle
-    }
 
+
+public class MGFeed {
+    public var url:String!
+    public init() {
+    }
 }
 
-fileprivate let storyboardName = "MGFeed"
-fileprivate let initialViewControllerIdentifier = "MGFeedController"
-fileprivate let resourceName = "MGFeedKit"
-fileprivate let resourceExtension = "bundle"
+public class MGAsset {
+    public var image:MGImage!
+    public var font:MGFont!
+    public var color:MGColor!
+    public var string:MGString!
+    public init() {
+        
+    }
+}
+
+public class MGImage {
+    public var navigationItemMenu:UIImage = UIImage()
+    public init() {
+        
+    }
+}
+
+public class MGFont {
+    public init() {
+        
+    }
+}
+
+public class MGColor {
+    public var backgroundView:UIColor!
+    public var backgroundTableView:UIColor!
+    public var tableViewSeparator:UIColor!
+    public var refreshTint:UIColor!
+    public var navigationBar:UIColor!
+    public var navigationBarTint:UIColor!
+    public var toolBar:UIColor!
+    public var toolBarTint:UIColor!
+    public var backgroundViewCell:UIColor!
+    public var cellTint:UIColor!
+    public init() {
+        
+    }
+}
+
+public class MGString {
+    public var title:String!
+    public var navigationTitle:String!
+    public var searchBarPlaceholder:String!
+    public init() {
+        
+    }
+}
