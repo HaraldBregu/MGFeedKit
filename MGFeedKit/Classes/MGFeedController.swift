@@ -58,12 +58,15 @@ public class MGFeedController: UIViewController {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = assets.string.searchBarPlaceholder
-        searchController.searchBar.tintColor = .red
+        searchController.searchBar.tintColor = assets.color.searchBarTint
 
         definesPresentationContext = true
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = true
         navigationItem.largeTitleDisplayMode = .automatic
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .play, target: nil, action: nil)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .camera, target: nil, action: nil)
 
         tableView.tableHeaderView = UIView()
         tableView.tableFooterView = UIView()
@@ -76,7 +79,7 @@ public class MGFeedController: UIViewController {
         refreshControl.addTarget(self, action: #selector(reloadData(button:)), for: .valueChanged)
         tableView.refreshControl = refreshControl
 
-        activityIndicatorView = UIActivityIndicatorView(style: .gray)
+        activityIndicatorView = UIActivityIndicatorView(style: .white)
         activityIndicatorView.center = tableView.center
         view.addSubview(activityIndicatorView)
 

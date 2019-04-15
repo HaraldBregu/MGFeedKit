@@ -28,12 +28,12 @@ import SDWebImage
 import GSImageViewerController
 
 
-class MGFeedDetailController: UIViewController {
+public class MGFeedDetailController: UIViewController {
     @IBOutlet var tableView: UITableView!
     public var item:MGFeedItem!
     public var assets:MGAsset!
 
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         
         title = assets.string.title
@@ -64,15 +64,15 @@ class MGFeedDetailController: UIViewController {
         present(activityIndicator, animated: true)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setToolbarHidden(true, animated: true)
     }
@@ -81,11 +81,11 @@ class MGFeedDetailController: UIViewController {
 
 extension MGFeedDetailController: UITableViewDelegate, UITableViewDataSource {
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MGFeedDetailViewCell") as? MGFeedDetailViewCell else {
             return UITableViewCell(frame: .zero)
         }
@@ -96,16 +96,16 @@ extension MGFeedDetailController: UITableViewDelegate, UITableViewDataSource {
         cell.itemImageView.sd_setIndicatorStyle(.white)
         cell.itemImageView.sd_setImage(with: URL(string: item.imageUrl))
         
-        let dateFormatterGet = DateFormatter()
-        dateFormatterGet.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
-//        let stringFromDate = dateFormatterGet.string(from: feedDataItem.author_pubDate ?? Date())
+//        let dateFormatterGet = DateFormatter()
+//        dateFormatterGet.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+//        let stringFromDate = dateFormatterGet.string(from: item.author_pubDate ?? Date())
 //        let pubDate = DateFormatter.formatedDate(dateString: stringFromDate, fromFormat: "yyyy-MM-dd HH:mm:ss Z", toFormat: "dd MMM yyyy")
 //        cell.itemDateAuthorLabel.text = pubDate
 //        cell.itemDateAuthorLabel.textColor = UIColor("#F3F7F8")
-        
-//        cell.itemDescriptionContentLabel.text = feedDataItem.itemDescription.byConvertingHTMLToPlainText()
+//
+//        cell.itemDescriptionContentLabel.text = DateFormatter.formatedDate.itemDescription.byConvertingHTMLToPlainText()
 //        cell.itemDescriptionContentLabel.textColor = UIColor("#F3F7F8")
-        
+//
 //        UITapGestureRecognizer(addToView: cell.itemImageView) { [unowned self] gesture in
 //            let imageInfo = GSImageInfo(image: cell.itemImageView.image ?? UIImage(), imageMode: .aspectFit, imageHD: nil)
 //            let transitionInfo = GSTransitionInfo(fromView: cell.itemImageView)
@@ -119,33 +119,4 @@ extension MGFeedDetailController: UITableViewDelegate, UITableViewDataSource {
 
         return cell
     }
-}
-
-
-extension MGFeedDetailController {
-    
-//    private var shareImage:UIImage {
-//        let shareIcon = IoniconsType.androidShare
-//        let icon = FontType.ionicons(shareIcon)
-//        return UIImage(icon: icon, size: playerSize, textColor: secondaryColor.withAlphaComponent(0.4), backgroundColor: .clear)
-//    }
-//
-//    private var optionImage:UIImage {
-//        let iconOption = IoniconsType.androidShare
-//        let type = FontType.ionicons(iconOption)
-//        return UIImage(icon: type, size: CGSize(width: 30, height: 30), textColor: #colorLiteral(red: 0.6666666667, green: 0.6470588235, blue: 0.7098039216, alpha: 1), backgroundColor: .clear)
-//    }
-//
-//    private var playerSize:CGSize {
-//        return CGSize(width: 100, height: 100)
-//    }
-//
-//    private var primaryColor:UIColor {
-//        return UIColor("#E21C3A")
-//    }
-//
-//    private var secondaryColor:UIColor {
-//        return UIColor.white
-//    }
-    
 }

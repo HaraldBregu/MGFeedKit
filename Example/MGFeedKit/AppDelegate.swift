@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let controller = MGFeedController.instance
         
         let data = MGFeed()
-        data.url = "https://thenextweb.com/feed/"
+        data.url = "https://www.theverge.com/rss/index.xml"
         controller.data = data
         
         let asset = MGAsset()

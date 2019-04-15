@@ -64,6 +64,7 @@ public class MGColor {
     public var navigationBarTint:UIColor!
     public var toolBar:UIColor!
     public var toolBarTint:UIColor!
+    public var searchBarTint:UIColor!
     public var backgroundViewCell:UIColor!
     public var cellTint:UIColor!
     public init() {
