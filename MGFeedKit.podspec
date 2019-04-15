@@ -8,13 +8,13 @@ Pod::Spec.new do |s|
   s.author           = { 'Harald Bregu' => 'harald.bregu@gmail.com' }
   s.source           = { :git => 'https://github.com/HaraldBregu/MGFeedKit.git', :tag => s.version.to_s }
   s.ios.deployment_target = '12.0'
-  s.swift_version = '4.2'
   s.source_files = 'MGFeedKit/Classes/**/*'
   s.resource_bundles = {
     'MGFeedKit' => ['MGFeedKit/Assets/*.{png,lproj,storyboard}']
   }
   s.dependency 'GSImageViewerController'
-  s.dependency 'SDWebImage'
   s.dependency 'SwiftSoup'
   s.dependency 'FeedKit', '~> 8.0'
+  s.dependency 'SDWebImage', '~> 4.0'
+  s.swift_version = '4.2'
 end

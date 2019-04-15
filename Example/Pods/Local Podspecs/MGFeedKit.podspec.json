@@ -1,6 +1,6 @@
 {
   "name": "MGFeedKit",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "summary": "When you sit down to work, external critics aren’t",
   "description": "When you sit down to work, external critics aren’t the enemy. It’s you who you must to fight against to do great fucking work. You must overcome yourself. Saul Bass on failure: Failure is built into creativity… the creative act involves this element of ‘newness’ and ‘experimentalism,’ then one must expect and accept the fucking possibility of failure.",
   "homepage": "https://github.com/HaraldBregu",
@@ -13,12 +13,11 @@
   },
   "source": {
     "git": "https://github.com/HaraldBregu/MGFeedKit.git",
-    "tag": "0.1.0"
+    "tag": "0.1.2"
   },
   "platforms": {
     "ios": "12.0"
   },
-  "swift_version": "4.2",
   "source_files": "MGFeedKit/Classes/**/*",
   "resource_bundles": {
     "MGFeedKit": [
@@ -29,14 +28,15 @@
     "GSImageViewerController": [
 
     ],
-    "SDWebImage": [
-
-    ],
     "SwiftSoup": [
 
     ],
     "FeedKit": [
       "~> 8.0"
+    ],
+    "SDWebImage": [
+      "~> 4.0"
     ]
-  }
+  },
+  "swift_version": "4.2"
 }

@@ -1,10 +1,10 @@
 PODS:
   - FeedKit (8.1.1)
   - GSImageViewerController (1.5.2)
-  - MGFeedKit (0.1.0):
+  - MGFeedKit (0.1.2):
     - FeedKit (~> 8.0)
     - GSImageViewerController
-    - SDWebImage
+    - SDWebImage (~> 4.0)
     - SwiftSoup
   - SDWebImage (4.4.6):
     - SDWebImage/Core (= 4.4.6)
@@ -15,7 +15,7 @@ DEPENDENCIES:
   - FeedKit (~> 8.0)
   - GSImageViewerController
   - MGFeedKit (from `../`)
-  - SDWebImage
+  - SDWebImage (~> 4.0)
   - SwiftSoup
 
 SPEC REPOS:
@@ -32,10 +32,10 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   FeedKit: 3418eed25f0b493b205b4de1b8511ac21d413fa9
   GSImageViewerController: 010a2754686462c3e3085a85005d7c83ba96317e
-  MGFeedKit: df40a6a7176bc8d1bb8353addeb8c8eceb70c2f8
+  MGFeedKit: dd974d5865901ef38a806369b2d516a8ffbbfce9
   SDWebImage: 3f3f0c02f09798048c47a5ed0a13f17b063572d8
   SwiftSoup: 92f5b348c131aed8af04f4326db1579ab19fa08c
 
-PODFILE CHECKSUM: bdafd1b7fae73f58c02eb89cad26a3388c6c62ac
+PODFILE CHECKSUM: 3dde74dd23766f28dedd5094856f05aca50e0312
 
 COCOAPODS: 1.6.1

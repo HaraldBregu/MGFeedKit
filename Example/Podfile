@@ -5,5 +5,5 @@ target 'MGFeedKit_Example' do
   pod 'GSImageViewerController'
   pod 'FeedKit', '~> 8.0'
   pod 'SwiftSoup'
-  pod 'SDWebImage'
+  pod 'SDWebImage', '~> 4.0'
 end
