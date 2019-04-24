@@ -30,16 +30,16 @@ import SDWebImage
 
 public class MGFeedController: UIViewController {
     @IBOutlet var tableView: UITableView!
-    
-    public var data:MGFeed!
-    public var assets:MGAsset!
+    public var delegate:MGFeedControllerDelegate?
+    public var dataSource:MGFeedControllerDataSource?
+    public var assets: MGFeedAsset!
     
     var items = [MGFeedItem]()
     var filteredItems = [MGFeedItem]()
    
-    var activityIndicatorView:UIActivityIndicatorView!
-    var searchController:UISearchController!
-    var refreshControl:UIRefreshControl = UIRefreshControl()
+    var activityIndicatorView: UIActivityIndicatorView!
+    var searchController: UISearchController!
+    var refreshControl: UIRefreshControl = UIRefreshControl()
     
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -64,9 +64,16 @@ public class MGFeedController: UIViewController {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = true
         navigationItem.largeTitleDisplayMode = .automatic
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .play, target: nil, action: nil)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .camera, target: nil, action: nil)
+        if let items = dataSource?.leftBarButtonItems(self) {
+            items.forEach({ $0.target = self })
+            items.forEach({ $0.action = #selector(navigationLeftItemAction(barButtonItem:)) })
+            navigationItem.leftBarButtonItems = items
+        }
+        if let items = dataSource?.rightBarButtonItems(self) {
+            items.forEach({ $0.target = self })
+            items.forEach({ $0.action = #selector(navigationLeftItemAction(barButtonItem:)) })
+            navigationItem.rightBarButtonItems = items
+        }
 
         tableView.tableHeaderView = UIView()
         tableView.tableFooterView = UIView()
@@ -83,15 +90,19 @@ public class MGFeedController: UIViewController {
         activityIndicatorView.center = tableView.center
         view.addSubview(activityIndicatorView)
 
-        setFeed(data)
-    }
- 
-    @objc private func reloadData(button:UIButton) {
-        refreshControl.endRefreshing()
-        setFeed(data)
+        setFeed(assets.data)
     }
     
-    private func setFeed(_ data: MGFeed) {
+    @objc private func navigationLeftItemAction(barButtonItem: UIBarButtonItem) {
+        self.delegate?.controller(self, didTapBarButtonItem: barButtonItem)
+    }
+
+    @objc private func reloadData(button:UIButton) {
+        refreshControl.endRefreshing()
+        setFeed(assets.data)
+    }
+    
+    private func setFeed(_ data: MGFeedData) {
         guard let url = URL(string: data.url) else { return }
         activityIndicatorView.startAnimating()
         let parser = FeedParser(URL: url)
@@ -223,7 +234,7 @@ extension MGFeedController: UITableViewDelegate, UITableViewDataSource {
         cell.itemImageView.sd_setImage(with: URL(string: item.imageUrl))
         
         cell.itemTitleLabel.text = item.title
-        //cell.itemDescriptionContentLabel.text = feedItem.itemDescription.byConvertingHTMLToPlainText()
+        cell.itemDescriptionContentLabel.text = item.itemDescription.htmlToPlainText
         
         cell.backgroundColor = assets.color.backgroundViewCell
         cell.contentView.backgroundColor = assets.color.backgroundViewCell
@@ -287,7 +298,105 @@ extension MGFeedController {
     
 }
 
+class MGFeedViewCell: UITableViewCell {
+    @IBOutlet var itemImageView: UIImageView!
+    @IBOutlet var itemTitleLabel: UILabel!
+    @IBOutlet var itemDescriptionContentLabel: UILabel!
+    override func awakeFromNib() {
+        super.awakeFromNib()
+    }
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+    }
+}
+
 fileprivate let storyboardName = "MGFeed"
 fileprivate let controllerIdentifier = "MGFeedController"
 fileprivate let resourceName = "MGFeedKit"
 fileprivate let resourceExtension = "bundle"
+
+
+/// Quick-n-dirty translation of MWFeedParser's algorithm from Objective-C to Swift
+/// seealso: https://github.com/mwaterfall/MWFeedParser/blob/master/Classes/NSString%2BHTML.m
+extension NSString {
+    var htmlToPlainText: String {
+        let stopCharacters = CharacterSet(charactersIn: "< \t\n\r\(0x0085)\(0x000C)\(0x2028)\(0x2029)")
+        let newLineAndWhitespaceCharacters = CharacterSet(charactersIn: " \t\n\r\(0x0085)\(0x000C)\(0x2028)\(0x2029)")
+        let tagNameCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        
+        let result = NSMutableString(capacity: length)
+        let scanner = Scanner(string: self as String)
+        scanner.charactersToBeSkipped = nil
+        scanner.caseSensitive = true
+        var str: NSString? = nil
+        var tagName: NSString? = nil
+        var dontReplaceTagWithSpace = false
+        
+        repeat {
+            // Scan up to the start of a tag or whitespace
+            if scanner.scanUpToCharacters(from: stopCharacters, into: &str), let s = str {
+                result.append(s as String)
+                str = nil
+            }
+            // Check if we've stopped at a tag/comment or whitespace
+            if scanner.scanString("<", into: nil) {
+                // Stopped at a comment, script tag, or other tag
+                if scanner.scanString("!--", into: nil) {
+                    // Comment
+                    scanner.scanUpTo("-->", into: nil)
+                    scanner.scanString("-->", into: nil)
+                } else if scanner.scanString("script", into: nil) {
+                    // Script tag where things don't need escaping!
+                    scanner.scanUpTo("</script>", into: nil)
+                    scanner.scanString("</script>", into: nil)
+                } else {
+                    // Tag - remove and replace with space unless it's
+                    // a closing inline tag then dont replace with a space
+                    if scanner.scanString("/", into: nil) {
+                        // Closing tag - replace with space unless it's inline
+                        tagName = nil
+                        dontReplaceTagWithSpace = false
+                        if scanner.scanCharacters(from: tagNameCharacters, into: &tagName), let t = tagName {
+                            tagName = t.lowercased as NSString
+                            dontReplaceTagWithSpace =
+                                tagName == "a" ||
+                                tagName == "b" ||
+                                tagName == "i" ||
+                                tagName == "q" ||
+                                tagName == "span" ||
+                                tagName == "em" ||
+                                tagName == "strong" ||
+                                tagName == "cite" ||
+                                tagName == "abbr" ||
+                                tagName == "acronym" ||
+                                tagName == "label"
+                        }
+                        // Replace tag with string unless it was an inline
+                        if !dontReplaceTagWithSpace && result.length > 0 && !scanner.isAtEnd {
+                            result.append(" ")
+                        }
+                    }
+                    // Scan past tag
+                    scanner.scanUpTo(">", into: nil)
+                    scanner.scanString(">", into: nil)
+                }
+            } else {
+                // Stopped at whitespace - replace all whitespace and newlines with a space
+                if scanner.scanCharacters(from: newLineAndWhitespaceCharacters, into: nil) {
+                    if result.length > 0 && !scanner.isAtEnd {
+                        result.append(" ") // Dont append space to beginning or end of result
+                    }
+                }
+            }
+        } while !scanner.isAtEnd
+        
+        // Cleanup
+        
+        // Decode HTML entities and return (this isn't included in this gist, but is often important)
+        // let retString = (result as String).stringByDecodingHTMLEntities
+        
+        // Return
+        return result as String // retString;
+    }
+    
+}

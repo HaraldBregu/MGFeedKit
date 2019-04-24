@@ -22,56 +22,117 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        let data = MGFeedData(title: "Digital Trend", urlString: "https://www.digitaltrends.com/feed/")
 
         let controller = MGFeedController.instance
+        controller.assets = FeedAsset(
+            string: FeedString(
+                title: "Titolo",
+                navigationTitle: "Titolo",
+                searchBarPlaceholder: "Cerca"),
+            font: FeedFont(
+                navigationTitle: nil,
+                cellTitle: nil,
+                cellDate: nil,
+                cellDescription: nil),
+            image: FeedImage(
+                navigationItemMenu: UIImage(),
+                navigationItemShare: #imageLiteral(resourceName: "menu")),
+            color: FeedColor(
+                navigationBar: .black,
+                navigationBarTint: .white,
+                toolBar: .black,
+                toolBarTint: .white,
+                backgroundView: .black,
+                backgroundTableView: .black,
+                tableViewSeparator: .black,
+                refreshTint: .white,
+                searchBarTint: .white,
+                backgroundViewCell: .black,
+                cellTint: .white),
+            data: FeedData(url: "https://www.digitaltrends.com/feed/"))
         
-        let data = MGFeed()
-        data.url = "https://www.theverge.com/rss/index.xml"
-        controller.data = data
-        
-        let asset = MGAsset()
-        let string = MGString()
-        string.title = "The Next Web"
-        asset.string = string
-        
-        let color = MGColor()
-        color.backgroundView = .black
-        color.navigationBar = .black
-        color.navigationBarTint = .white
-        color.toolBar = .black
-        color.toolBarTint = .white
-        color.backgroundViewCell = .black
-        color.cellTint = .white
-        asset.color = color
-        
-        controller.assets = asset
-        
+        controller.delegate = self
+        controller.dataSource = self
         window?.rootViewController = UINavigationController(rootViewController: controller)
         window?.makeKeyAndVisible()
         return true
     }
 
-
-    func applicationWillResignActive(_ application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-    }
-
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    }
-
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-    }
-
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    }
-
-    func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    }
-
-
 }
 
+extension AppDelegate: MGFeedControllerDelegate, MGFeedControllerDataSource {
+    
+    func controller(_ controller: MGFeedController, didTapBarButtonItem barButtonItem: UIBarButtonItem) {
+        
+    }
+    
+    func leftBarButtonItems(_ controller: MGFeedController) -> [UIBarButtonItem] {
+       
+        let button1 = UIBarButtonItem()
+        button1.image = #imageLiteral(resourceName: "menu")
+        button1.style = .plain
+        button1.accessibilityIdentifier = "First"
+        
+        let button2 = UIBarButtonItem()
+        button2.image = #imageLiteral(resourceName: "menu")
+        button2.style = .plain
+        button2.accessibilityIdentifier = "Second"
+        
+
+        return [button1, button2]
+    }
+    
+    func rightBarButtonItems(_ controller: MGFeedController) -> [UIBarButtonItem] {
+        
+        let button2 = UIBarButtonItem()
+        button2.image = #imageLiteral(resourceName: "menu")
+        button2.style = .plain
+        button2.accessibilityIdentifier = "Second"
+        
+        
+        return [button2]
+    }
+    
+}
+
+struct FeedAsset: MGFeedAsset {
+    var string: MGFeedString
+    var font: MGFeedFont
+    var image: MGFeedImage
+    var color: MGFeedColor
+    var data: MGFeedData
+}
+
+struct FeedString: MGFeedString {
+    var title: String
+    var navigationTitle: String
+    var searchBarPlaceholder: String
+}
+
+struct FeedFont: MGFeedFont {
+    var navigationTitle: UIFont?
+    var cellTitle: UIFont?
+    var cellDate: UIFont?
+    var cellDescription: UIFont?
+}
+
+struct FeedImage: MGFeedImage {
+    var navigationItemMenu: UIImage
+    var navigationItemShare: UIImage
+}
+
+struct FeedColor: MGFeedColor {
+    var navigationBar: UIColor
+    var navigationBarTint: UIColor
+    var toolBar: UIColor
+    var toolBarTint: UIColor
+    var backgroundView: UIColor
+    var backgroundTableView: UIColor
+    var tableViewSeparator: UIColor
+    var refreshTint: UIColor
+    var searchBarTint: UIColor
+    var backgroundViewCell: UIColor
+    var cellTint: UIColor
+}
+
+struct FeedData: MGFeedData {
+    var url: String
+}

@@ -31,7 +31,7 @@ import GSImageViewerController
 public class MGFeedDetailController: UIViewController {
     @IBOutlet var tableView: UITableView!
     public var item:MGFeedItem!
-    public var assets:MGAsset!
+    public var assets: MGFeedAsset!
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -46,7 +46,7 @@ public class MGFeedDetailController: UIViewController {
         navigationController?.navigationBar.barStyle = .black
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .never
-        //navigationItem.rightBarButtonItem = UIBarButtonItem(image: optionImage, style: .plain, target: self, action: #selector(shareFeedItem))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: assets.image.navigationItemShare, style: .plain, target: self, action: #selector(share(barButtonItem:)))
 
         tableView.tableHeaderView = UIView()
         tableView.tableFooterView = UIView()
@@ -57,19 +57,14 @@ public class MGFeedDetailController: UIViewController {
         tableView.separatorColor = assets.color.tableViewSeparator
     }
     
-    @objc func shareFeedItem() {
-        
+    @objc func share(barButtonItem: UIBarButtonItem) {
         let items = [item.itemUrl!]
         let activityIndicator = UIActivityViewController(activityItems: items, applicationActivities: nil)
         present(activityIndicator, animated: true)
-    }
-    
-    override public func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
-    override public func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        if let popover = activityIndicator.popoverPresentationController {
+            popover.sourceView = self.view
+            popover.barButtonItem = barButtonItem
+        }
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
@@ -89,34 +84,135 @@ extension MGFeedDetailController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MGFeedDetailViewCell") as? MGFeedDetailViewCell else {
             return UITableViewCell(frame: .zero)
         }
-        
+
+        cell.backgroundColor = assets.color.backgroundViewCell
+        cell.contentView.backgroundColor = assets.color.backgroundViewCell
+
         cell.itemTitleLabel.text = item.title
+        cell.itemTitleLabel.font = assets.font.cellTitle
+        cell.itemTitleLabel.textColor = assets.color.cellTint
 
         cell.itemImageView.sd_setShowActivityIndicatorView(true)
         cell.itemImageView.sd_setIndicatorStyle(.white)
         cell.itemImageView.sd_setImage(with: URL(string: item.imageUrl))
         
-//        let dateFormatterGet = DateFormatter()
-//        dateFormatterGet.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
-//        let stringFromDate = dateFormatterGet.string(from: item.author_pubDate ?? Date())
-//        let pubDate = DateFormatter.formatedDate(dateString: stringFromDate, fromFormat: "yyyy-MM-dd HH:mm:ss Z", toFormat: "dd MMM yyyy")
-//        cell.itemDateAuthorLabel.text = pubDate
-//        cell.itemDateAuthorLabel.textColor = UIColor("#F3F7F8")
-//
-//        cell.itemDescriptionContentLabel.text = DateFormatter.formatedDate.itemDescription.byConvertingHTMLToPlainText()
-//        cell.itemDescriptionContentLabel.textColor = UIColor("#F3F7F8")
-//
-//        UITapGestureRecognizer(addToView: cell.itemImageView) { [unowned self] gesture in
-//            let imageInfo = GSImageInfo(image: cell.itemImageView.image ?? UIImage(), imageMode: .aspectFit, imageHD: nil)
-//            let transitionInfo = GSTransitionInfo(fromView: cell.itemImageView)
-//            let imageViewer = GSImageViewerController(imageInfo: imageInfo, transitionInfo: transitionInfo)
-//            self.present(imageViewer, animated: true, completion: nil)
-//        }
-        
-        cell.backgroundColor = assets.color.backgroundViewCell
-        cell.contentView.backgroundColor = assets.color.backgroundViewCell
-        cell.itemTitleLabel.textColor = assets.color.cellTint
+        let dateFormatterGet = DateFormatter()
+        dateFormatterGet.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+        let stringFromDate = dateFormatterGet.string(from: item.author_pubDate ?? Date())
+        let pubDate = DateFormatter.formatedDate(dateString: stringFromDate, fromFormat: "yyyy-MM-dd HH:mm:ss Z", toFormat: "dd MMM yyyy")
+        cell.itemDateAuthorLabel.text = pubDate
+        cell.itemDateAuthorLabel.textColor = assets.color.cellTint
+        cell.itemDateAuthorLabel.font = assets.font.cellDate
+
+        cell.itemDescriptionContentLabel.text = item.itemDescription.htmlToPlainText
+        cell.itemDescriptionContentLabel.textColor = assets.color.cellTint
+        cell.itemDescriptionContentLabel.font = assets.font.cellDescription
+
+        UITapGestureRecognizer(addToView: cell.itemImageView) { [unowned self] gesture in
+            let imageInfo = GSImageInfo(image: cell.itemImageView.image ?? UIImage(), imageMode: .aspectFit, imageHD: nil)
+            let transitionInfo = GSTransitionInfo(fromView: cell.itemImageView)
+            let imageViewer = GSImageViewerController(imageInfo: imageInfo, transitionInfo: transitionInfo)
+            self.present(imageViewer, animated: true, completion: nil)
+        }
 
         return cell
     }
+    
+}
+
+class MGFeedDetailViewCell: UITableViewCell {
+    @IBOutlet var itemImageView: UIImageView!
+    @IBOutlet var itemTitleLabel: UILabel!
+    @IBOutlet var itemDateAuthorLabel: UILabel!
+    @IBOutlet var itemDescriptionContentLabel: UILabel!
+    override func awakeFromNib() {
+        super.awakeFromNib()
+    }
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+    }
+}
+
+extension DateFormatter {
+    
+    @discardableResult
+    static func formatedDate(dateString:String, fromFormat:String, toFormat:String) -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = fromFormat
+        let dateFormatterPrint = DateFormatter()
+        dateFormatterPrint.dateFormat = toFormat
+        guard let date = dateFormatter.date(from: dateString) else { return nil }
+        return dateFormatterPrint.string(from: date)
+    }
+    
+}
+
+extension UIGestureRecognizer {
+    
+    @discardableResult
+    convenience init(addToView targetView: UIView, closure: @escaping (_ gesture: UIGestureRecognizer) -> Void) {
+        self.init()
+        GestureTarget.add(gesture: self, closure: closure, toView: targetView)
+    }
+    
+}
+
+fileprivate class GestureTarget: UIView {
+    
+    class ClosureContainer {
+        weak var gesture: UIGestureRecognizer?
+        let closure: ((_ gesture: UIGestureRecognizer) -> Void)
+        init(closure: @escaping (_ gesture: UIGestureRecognizer) -> Void) {
+            self.closure = closure
+        }
+    }
+    
+    var containers = [ClosureContainer]()
+    
+    convenience init() {
+        self.init(frame: .zero)
+        isHidden = true
+    }
+    
+    class func add(gesture: UIGestureRecognizer, closure: @escaping (_ gesture: UIGestureRecognizer) -> Void, toView targetView: UIView) {
+        let target: GestureTarget
+        if let existingTarget = existingTarget(inTargetView: targetView) {
+            target = existingTarget
+        } else {
+            target = GestureTarget()
+            targetView.addSubview(target)
+        }
+        let container = ClosureContainer(closure: closure)
+        container.gesture = gesture
+        target.containers.append(container)
+        
+        gesture.addTarget(target, action: #selector(GestureTarget.target(gesture:)))
+        targetView.addGestureRecognizer(gesture)
+    }
+    
+    class func existingTarget(inTargetView targetView: UIView) -> GestureTarget? {
+        for subview in targetView.subviews {
+            if let target = subview as? GestureTarget {
+                return target
+            }
+        }
+        return nil
+    }
+    
+    func cleanUpContainers() {
+        containers = containers.filter({ $0.gesture != nil })
+    }
+    
+    @objc func target(gesture: UIGestureRecognizer) {
+        cleanUpContainers()
+        for container in containers {
+            guard let containerGesture = container.gesture else {
+                continue
+            }
+            if gesture === containerGesture {
+                container.closure(gesture)
+            }
+        }
+    }
+    
 }

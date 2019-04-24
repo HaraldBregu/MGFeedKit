@@ -26,6 +26,59 @@
 import Foundation
 
 
+public protocol MGFeedAsset {
+    var string: MGFeedString { get set }
+    var font: MGFeedFont { get set }
+    var image: MGFeedImage { get set }
+    var color: MGFeedColor { get set }
+    var data: MGFeedData { get set }
+}
+
+public protocol MGFeedString {
+    var title:String { get set }
+    var navigationTitle:String { get set }
+    var searchBarPlaceholder:String { get set }
+}
+
+public protocol MGFeedFont {
+    var navigationTitle:UIFont? { get set }
+    var cellTitle:UIFont? { get set }
+    var cellDate:UIFont? { get set }
+    var cellDescription:UIFont? { get set }
+}
+
+public protocol MGFeedImage {
+    var navigationItemMenu: UIImage { get set }
+    var navigationItemShare: UIImage { get set }
+}
+
+public protocol MGFeedColor {
+    var navigationBar: UIColor { get set }
+    var navigationBarTint: UIColor { get set }
+    var toolBar: UIColor { get set }
+    var toolBarTint: UIColor { get set }
+    var backgroundView: UIColor { get set }
+    var backgroundTableView: UIColor { get set }
+    var tableViewSeparator: UIColor { get set }
+    var refreshTint: UIColor { get set }
+    var searchBarTint: UIColor { get set }
+    var backgroundViewCell: UIColor { get set }
+    var cellTint: UIColor { get set }
+}
+
+public protocol MGFeedData {
+    var url:String { get set }
+}
+
+public class MGFeedItem {
+    public var title:String!
+    public var imageUrl:String!
+    public var author_pubDate:Date?
+    public var itemDescription:String!
+    public var itemUrl:String!
+    public init() {}
+}
+
 public class MGFeed {
     public var url:String!
     public init() {
@@ -76,7 +129,5 @@ public class MGString {
     public var title:String!
     public var navigationTitle:String!
     public var searchBarPlaceholder:String!
-    public init() {
-        
-    }
+    public init() {}
 }

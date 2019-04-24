@@ -1,7 +1,7 @@
 // 
-//  MGFeedDetailViewCell.swift
+//  MGFeedDetailControllerDataSource.swift
 //
-//  Created by harald bregu on 28/02/2019.
+//  Created by harald bregu on 24/04/2019.
 //  Copyright © 2019 Dream Building Company. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,22 +23,9 @@
 //  THE SOFTWARE.
 //
 
-import UIKit
+import Foundation
 
-/// :nodoc:
-class MGFeedDetailViewCell: UITableViewCell {
-    @IBOutlet var itemImageView: UIImageView!
-    @IBOutlet var itemTitleLabel: UILabel!
-    @IBOutlet var itemDateAuthorLabel: UILabel!
-    @IBOutlet var itemDescriptionContentLabel: UILabel!
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-
-    }
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
-
+public protocol MGFeedControllerDataSource {
+    func leftBarButtonItems(_ controller:MGFeedController) -> [UIBarButtonItem]
+    func rightBarButtonItems(_ controller:MGFeedController) -> [UIBarButtonItem]
 }

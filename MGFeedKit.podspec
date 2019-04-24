@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'MGFeedKit'
-  s.version          = '0.1.2'
+  s.version          = '0.1.3'
   s.summary          = 'When you sit down to work, external critics aren’t'
   s.description      = 'When you sit down to work, external critics aren’t the enemy. It’s you who you must to fight against to do great fucking work. You must overcome yourself. Saul Bass on failure: Failure is built into creativity… the creative act involves this element of ‘newness’ and ‘experimentalism,’ then one must expect and accept the fucking possibility of failure.'
   s.homepage         = 'https://github.com/HaraldBregu'
