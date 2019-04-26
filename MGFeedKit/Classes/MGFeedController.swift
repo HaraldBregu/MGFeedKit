@@ -66,12 +66,12 @@ public class MGFeedController: UIViewController {
         navigationItem.largeTitleDisplayMode = .automatic
         if let items = dataSource?.leftBarButtonItems(self) {
             items.forEach({ $0.target = self })
-            items.forEach({ $0.action = #selector(navigationLeftItemAction(barButtonItem:)) })
+            items.forEach({ $0.action = #selector(navigationItemAction(barButtonItem:)) })
             navigationItem.leftBarButtonItems = items
         }
         if let items = dataSource?.rightBarButtonItems(self) {
             items.forEach({ $0.target = self })
-            items.forEach({ $0.action = #selector(navigationLeftItemAction(barButtonItem:)) })
+            items.forEach({ $0.action = #selector(navigationItemAction(barButtonItem:)) })
             navigationItem.rightBarButtonItems = items
         }
 
@@ -93,7 +93,7 @@ public class MGFeedController: UIViewController {
         setFeed(assets.data)
     }
     
-    @objc private func navigationLeftItemAction(barButtonItem: UIBarButtonItem) {
+    @objc private func navigationItemAction(barButtonItem: UIBarButtonItem) {
         self.delegate?.controller(self, didTapBarButtonItem: barButtonItem)
     }
 
@@ -133,8 +133,8 @@ public class MGFeedController: UIViewController {
             if let html = feedItem.content?.value {
                 do {
                     let doc: Document = try SwiftSoup.parse(html)
-                    let link: Element = try doc.select("img").first()!
-                    let linkHref: String = try link.attr("src")
+                    let link: Element? = try doc.select("img").first()
+                    let linkHref: String = try link?.attr("src") ?? ""
 
                     let item = MGFeedItem()
                     item.title = feedItem.title ?? ""
