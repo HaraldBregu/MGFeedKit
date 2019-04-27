@@ -26,5 +26,5 @@
 import Foundation
 
 public protocol MGFeedControllerDelegate {
-    func controller(_ controller:MGFeedController, didTapBarButtonItem barButtonItem:UIBarButtonItem)
+    func controller(_ controller: UIViewController, didTapBarButtonItem barButtonItem: UIBarButtonItem)
 }

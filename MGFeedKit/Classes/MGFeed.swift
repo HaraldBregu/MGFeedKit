@@ -25,7 +25,6 @@
 
 import Foundation
 
-
 public protocol MGFeedAsset {
     var string: MGFeedString { get set }
     var font: MGFeedFont { get set }
@@ -35,16 +34,16 @@ public protocol MGFeedAsset {
 }
 
 public protocol MGFeedString {
-    var title:String { get set }
-    var navigationTitle:String { get set }
-    var searchBarPlaceholder:String { get set }
+    var title: String { get set }
+    var navigationTitle: String { get set }
+    var searchBarPlaceholder: String { get set }
 }
 
 public protocol MGFeedFont {
-    var navigationTitle:UIFont? { get set }
-    var cellTitle:UIFont? { get set }
-    var cellDate:UIFont? { get set }
-    var cellDescription:UIFont? { get set }
+    var navigationTitle: UIFont? { get set }
+    var cellTitle: UIFont? { get set }
+    var cellDate: UIFont? { get set }
+    var cellDescription: UIFont? { get set }
 }
 
 public protocol MGFeedImage {
@@ -67,67 +66,70 @@ public protocol MGFeedColor {
 }
 
 public protocol MGFeedData {
-    var url:String { get set }
+    var url: String { get set }
+    var items: [MGFeedItem] { get set }
+    var enableAds: Bool { get set }
+    var adsUnitId: String { get set }
 }
 
 public class MGFeedItem {
-    public var title:String!
-    public var imageUrl:String!
-    public var author_pubDate:Date?
-    public var itemDescription:String!
-    public var itemUrl:String!
+    public var title: String!
+    public var imageUrl: String!
+    public var author_pubDate: Date?
+    public var itemDescription: String!
+    public var itemUrl: String!
     public init() {}
 }
 
-public class MGFeed {
-    public var url:String!
-    public init() {
-    }
-}
-
-public class MGAsset {
-    public var image:MGImage!
-    public var font:MGFont!
-    public var color:MGColor!
-    public var string:MGString!
-    public init() {
-        
-    }
-}
-
-public class MGImage {
-    public var navigationItemMenu:UIImage = UIImage()
-    public init() {
-        
-    }
-}
-
-public class MGFont {
-    public init() {
-        
-    }
-}
-
-public class MGColor {
-    public var backgroundView:UIColor!
-    public var backgroundTableView:UIColor!
-    public var tableViewSeparator:UIColor!
-    public var refreshTint:UIColor!
-    public var navigationBar:UIColor!
-    public var navigationBarTint:UIColor!
-    public var toolBar:UIColor!
-    public var toolBarTint:UIColor!
-    public var searchBarTint:UIColor!
-    public var backgroundViewCell:UIColor!
-    public var cellTint:UIColor!
-    public init() {
-        
-    }
-}
-
-public class MGString {
-    public var title:String!
-    public var navigationTitle:String!
-    public var searchBarPlaceholder:String!
-    public init() {}
-}
+//public class MGFeed {
+//    public var url: String!
+//    public init() {
+//    }
+//}
+//
+//public class MGAsset {
+//    public var image:MGImage!
+//    public var font:MGFont!
+//    public var color:MGColor!
+//    public var string:MGString!
+//    public init() {
+//
+//    }
+//}
+//
+//public class MGImage {
+//    public var navigationItemMenu:UIImage = UIImage()
+//    public init() {
+//
+//    }
+//}
+//
+//public class MGFont {
+//    public init() {
+//
+//    }
+//}
+//
+//public class MGColor {
+//    public var backgroundView: UIColor!
+//    public var backgroundTableView: UIColor!
+//    public var tableViewSeparator: UIColor!
+//    public var refreshTint: UIColor!
+//    public var navigationBar: UIColor!
+//    public var navigationBarTint: UIColor!
+//    public var toolBar: UIColor!
+//    public var toolBarTint: UIColor!
+//    public var searchBarTint: UIColor!
+//    public var backgroundViewCell: UIColor!
+//    public var cellTint: UIColor!
+//    public init() {
+//
+//    }
+//}
+//
+//public class MGString {
+//    public var title: String!
+//    public var navigationTitle: String!
+//    public var searchBarPlaceholder: String!
+//    public init() {}
+//}

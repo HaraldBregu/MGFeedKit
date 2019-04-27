@@ -27,11 +27,15 @@ import UIKit
 import FeedKit
 import SwiftSoup
 import SDWebImage
+import SnapKit
+import FirebaseCore
+import GoogleMobileAds
 
 public class MGFeedController: UIViewController {
     @IBOutlet var tableView: UITableView!
-    public var delegate:MGFeedControllerDelegate?
-    public var dataSource:MGFeedControllerDataSource?
+    
+    public var delegate: MGFeedControllerDelegate?
+    public var dataSource: MGFeedControllerDataSource?
     public var assets: MGFeedAsset!
     
     var items = [MGFeedItem]()
@@ -40,7 +44,8 @@ public class MGFeedController: UIViewController {
     var activityIndicatorView: UIActivityIndicatorView!
     var searchController: UISearchController!
     var refreshControl: UIRefreshControl = UIRefreshControl()
-    
+    var bannerView: GADBannerView!
+
     override public func viewDidLoad() {
         super.viewDidLoad()
         
@@ -64,11 +69,14 @@ public class MGFeedController: UIViewController {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = true
         navigationItem.largeTitleDisplayMode = .automatic
+        
         if let items = dataSource?.leftBarButtonItems(self) {
             items.forEach({ $0.target = self })
             items.forEach({ $0.action = #selector(navigationItemAction(barButtonItem:)) })
             navigationItem.leftBarButtonItems = items
+            navigationItem.leftItemsSupplementBackButton = true
         }
+        
         if let items = dataSource?.rightBarButtonItems(self) {
             items.forEach({ $0.target = self })
             items.forEach({ $0.action = #selector(navigationItemAction(barButtonItem:)) })
@@ -91,6 +99,21 @@ public class MGFeedController: UIViewController {
         view.addSubview(activityIndicatorView)
 
         setFeed(assets.data)
+        
+        bannerView = GADBannerView(adSize: kGADAdSizeBanner)
+        view.addSubview(bannerView)
+        if let assets = assets, assets.data.enableAds == true, assets.data.adsUnitId.count > 0 {
+            bannerView.snp.makeConstraints { make in
+                make.bottom.equalTo(self.view)
+                make.leading.equalTo(self.view)
+                make.trailing.equalTo(self.view)
+            }
+            bannerView.adUnitID = assets.data.adsUnitId
+            bannerView.rootViewController = self
+            bannerView.load(GADRequest())
+            bannerView.delegate = self
+        }
+
     }
     
     public override func viewWillLayoutSubviews() {
@@ -249,6 +272,7 @@ extension MGFeedController: UITableViewDelegate, UITableViewDataSource {
         cell.itemDescriptionContentLabel.textColor = assets.color.cellTint
         
         cell.layoutIfNeeded()
+        
         return cell
     }
     
@@ -257,6 +281,8 @@ extension MGFeedController: UITableViewDelegate, UITableViewDataSource {
             let item = isFiltering ? filteredItems[indexPath.row] : items[indexPath.row]
             controller.item = item
             controller.assets = assets
+            controller.delegate = delegate
+            controller.dataSource = dataSource
             navigationController?.pushViewController(controller, animated: true)
         }
     }
@@ -322,6 +348,41 @@ fileprivate let controllerIdentifier = "MGFeedController"
 fileprivate let resourceName = "MGFeedKit"
 fileprivate let resourceExtension = "bundle"
 
+extension MGFeedController: GADBannerViewDelegate {
+    
+    /// Tells the delegate an ad request loaded an ad.
+    public func adViewDidReceiveAd(_ bannerView: GADBannerView) {
+        //print("adViewDidReceiveAd")
+    }
+    
+    /// Tells the delegate an ad request failed.
+    public func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
+        //print("adView:didFailToReceiveAdWithError: \(error.localizedDescription)")
+    }
+    
+    /// Tells the delegate that a full-screen view will be presented in response
+    /// to the user clicking on an ad.
+    public func adViewWillPresentScreen(_ bannerView: GADBannerView) {
+        //print("adViewWillPresentScreen")
+    }
+    
+    /// Tells the delegate that the full-screen view will be dismissed.
+    public func adViewWillDismissScreen(_ bannerView: GADBannerView) {
+        //print("adViewWillDismissScreen")
+    }
+    
+    /// Tells the delegate that the full-screen view has been dismissed.
+    public func adViewDidDismissScreen(_ bannerView: GADBannerView) {
+        //print("adViewDidDismissScreen")
+    }
+    
+    /// Tells the delegate that a user click will open another app (such as
+    /// the App Store), backgrounding the current app.
+    public func adViewWillLeaveApplication(_ bannerView: GADBannerView) {
+        //print("adViewWillLeaveApplication")
+    }
+    
+}
 
 /// Quick-n-dirty translation of MWFeedParser's algorithm from Objective-C to Swift
 /// seealso: https://github.com/mwaterfall/MWFeedParser/blob/master/Classes/NSString%2BHTML.m

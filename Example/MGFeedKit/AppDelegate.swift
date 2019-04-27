@@ -8,6 +8,7 @@
 
 import UIKit
 import MGFeedKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,6 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        FirebaseApp.configure()
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
+
         window = UIWindow(frame: UIScreen.main.bounds)
 //        let data = MGFeedData(title: "The Next Web", urlString: "https://thenextweb.com/feed/")
 //        let data = MGFeedData(title: "Tech Crunch", urlString: "https://techcrunch.com/feed/")
@@ -47,7 +51,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 searchBarTint: .white,
                 backgroundViewCell: .black,
                 cellTint: .white),
-            data: FeedData(url: "https://www.digitaltrends.com/feed/"))
+            data: FeedData(
+                url: "https://www.digitaltrends.com/feed/",
+                items: [],
+                enableAds: true,
+                adsUnitId: "ca-app-pub-3940256099942544/2934735716"))
         
         controller.delegate = self
         controller.dataSource = self
@@ -60,11 +68,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 extension AppDelegate: MGFeedControllerDelegate, MGFeedControllerDataSource {
     
-    func controller(_ controller: MGFeedController, didTapBarButtonItem barButtonItem: UIBarButtonItem) {
+    func controller(_ controller: UIViewController, didTapBarButtonItem barButtonItem: UIBarButtonItem) {
         
     }
     
-    func leftBarButtonItems(_ controller: MGFeedController) -> [UIBarButtonItem] {
+    func leftBarButtonItems(_ controller: UIViewController) -> [UIBarButtonItem] {
        
         let button1 = UIBarButtonItem()
         button1.image = #imageLiteral(resourceName: "menu")
@@ -80,7 +88,7 @@ extension AppDelegate: MGFeedControllerDelegate, MGFeedControllerDataSource {
         return [button1, button2]
     }
     
-    func rightBarButtonItems(_ controller: MGFeedController) -> [UIBarButtonItem] {
+    func rightBarButtonItems(_ controller: UIViewController) -> [UIBarButtonItem] {
         
         let button2 = UIBarButtonItem()
         button2.image = #imageLiteral(resourceName: "menu")
@@ -135,4 +143,7 @@ struct FeedColor: MGFeedColor {
 
 struct FeedData: MGFeedData {
     var url: String
+    var items: [MGFeedItem]
+    var enableAds: Bool
+    var adsUnitId: String
 }

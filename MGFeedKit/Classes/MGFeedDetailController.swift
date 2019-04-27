@@ -30,8 +30,11 @@ import GSImageViewerController
 
 public class MGFeedDetailController: UIViewController {
     @IBOutlet var tableView: UITableView!
-    public var item:MGFeedItem!
+   
+    public var delegate: MGFeedControllerDelegate?
+    public var dataSource: MGFeedControllerDataSource?
     public var assets: MGFeedAsset!
+    public var item: MGFeedItem!
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -46,7 +49,19 @@ public class MGFeedDetailController: UIViewController {
         navigationController?.navigationBar.barStyle = .black
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .never
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: assets.image.navigationItemShare, style: .plain, target: self, action: #selector(share(barButtonItem:)))
+
+        if let items = dataSource?.leftBarButtonItems(self) {
+            items.forEach({ $0.target = self })
+            items.forEach({ $0.action = #selector(navigationItemAction(barButtonItem:)) })
+            navigationItem.leftBarButtonItems = items
+            navigationItem.leftItemsSupplementBackButton = true
+        }
+        
+        if let items = dataSource?.rightBarButtonItems(self) {
+            items.forEach({ $0.target = self })
+            items.forEach({ $0.action = #selector(navigationItemAction(barButtonItem:)) })
+            navigationItem.rightBarButtonItems = items
+        }
 
         tableView.tableHeaderView = UIView()
         tableView.tableFooterView = UIView()
@@ -57,21 +72,10 @@ public class MGFeedDetailController: UIViewController {
         tableView.separatorColor = assets.color.tableViewSeparator
     }
     
-    @objc func share(barButtonItem: UIBarButtonItem) {
-        let items = [item.itemUrl!]
-        let activityIndicator = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        present(activityIndicator, animated: true)
-        if let popover = activityIndicator.popoverPresentationController {
-            popover.sourceView = self.view
-            popover.barButtonItem = barButtonItem
-        }
+    @objc private func navigationItemAction(barButtonItem: UIBarButtonItem) {
+        self.delegate?.controller(self, didTapBarButtonItem: barButtonItem)
     }
     
-    override public func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setToolbarHidden(true, animated: true)
-    }
-
 }
 
 extension MGFeedDetailController: UITableViewDelegate, UITableViewDataSource {

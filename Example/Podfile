@@ -6,4 +6,7 @@ target 'MGFeedKit_Example' do
   pod 'FeedKit', '~> 8.0'
   pod 'SwiftSoup'
   pod 'SDWebImage', '~> 4.0'
+  pod 'SnapKit', '~> 4.0.0'
+  pod 'Firebase/Core'
+  pod 'Firebase/AdMob'
 end
