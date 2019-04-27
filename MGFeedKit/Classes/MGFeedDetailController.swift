@@ -34,7 +34,7 @@ public class MGFeedDetailController: UIViewController {
     public var delegate: MGFeedControllerDelegate?
     public var dataSource: MGFeedControllerDataSource?
     public var assets: MGFeedAsset!
-    public var item: MGFeedItem!
+    var item: MGFeedItem!
 
     override public func viewDidLoad() {
         super.viewDidLoad()

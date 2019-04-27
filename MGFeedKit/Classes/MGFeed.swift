@@ -67,17 +67,7 @@ public protocol MGFeedColor {
 
 public protocol MGFeedData {
     var url: String { get set }
-    var items: [MGFeedItem] { get set }
     var enableAds: Bool { get set }
     var adsUnitId: String { get set }
     var darkKeyboard: Bool { get set }
-}
-
-public class MGFeedItem {
-    public var title: String!
-    public var imageUrl: String!
-    public var author_pubDate: Date?
-    public var itemDescription: String!
-    public var itemUrl: String!
-    public init() {}
 }

@@ -53,7 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 cellTint: .white),
             data: FeedData(
                 url: "https://www.digitaltrends.com/feed/",
-                items: [],
                 enableAds: true,
                 adsUnitId: "ca-app-pub-3940256099942544/2934735716", darkKeyboard: true))
         
@@ -143,7 +142,6 @@ struct FeedColor: MGFeedColor {
 
 struct FeedData: MGFeedData {
     var url: String
-    var items: [MGFeedItem]
     var enableAds: Bool
     var adsUnitId: String
     var darkKeyboard: Bool

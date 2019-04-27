@@ -469,3 +469,12 @@ extension NSString {
     }
     
 }
+
+class MGFeedItem {
+    var title: String!
+    var imageUrl: String!
+    var author_pubDate: Date?
+    var itemDescription: String!
+    var itemUrl: String!
+    init() {}
+}
