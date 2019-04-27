@@ -64,6 +64,7 @@ public class MGFeedController: UIViewController {
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = assets.string.searchBarPlaceholder
         searchController.searchBar.tintColor = assets.color.searchBarTint
+        searchController.searchBar.keyboardAppearance = assets.data.darkKeyboard ? .dark : .light
 
         definesPresentationContext = true
         navigationItem.searchController = searchController

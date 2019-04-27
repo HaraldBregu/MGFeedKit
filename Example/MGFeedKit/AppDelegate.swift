@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 url: "https://www.digitaltrends.com/feed/",
                 items: [],
                 enableAds: true,
-                adsUnitId: "ca-app-pub-3940256099942544/2934735716"))
+                adsUnitId: "ca-app-pub-3940256099942544/2934735716", darkKeyboard: true))
         
         controller.delegate = self
         controller.dataSource = self
@@ -146,4 +146,5 @@ struct FeedData: MGFeedData {
     var items: [MGFeedItem]
     var enableAds: Bool
     var adsUnitId: String
+    var darkKeyboard: Bool
 }
