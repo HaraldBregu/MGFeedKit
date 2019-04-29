@@ -43,7 +43,7 @@ public class MGFeedController: UIViewController {
    
     var activityIndicatorView: UIActivityIndicatorView!
     var searchController: UISearchController!
-    var refreshControl: UIRefreshControl = UIRefreshControl()
+    var refreshControl: UIRefreshControl!
     var bannerView: GADBannerView!
 
     override public func viewDidLoad() {
@@ -52,9 +52,9 @@ public class MGFeedController: UIViewController {
         title = assets.string.title
         navigationItem.title = assets.string.title
         
-        view.backgroundColor = assets.color.backgroundView
-        navigationController?.navigationBar.tintColor = assets.color.navigationBarTint
+        view.backgroundColor = assets.color.view
         navigationController?.navigationBar.barTintColor = assets.color.navigationBar
+        navigationController?.navigationBar.tintColor = assets.color.navigationBarContent
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.barStyle = .black
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -63,8 +63,8 @@ public class MGFeedController: UIViewController {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = assets.string.searchBarPlaceholder
-        searchController.searchBar.tintColor = assets.color.searchBarTint
-        searchController.searchBar.keyboardAppearance = assets.data.darkKeyboard ? .dark : .light
+        searchController.searchBar.tintColor = assets.color.searchBarContent
+        searchController.searchBar.keyboardAppearance = assets.data.keyboardAppearance
 
         definesPresentationContext = true
         navigationItem.searchController = searchController
@@ -88,22 +88,22 @@ public class MGFeedController: UIViewController {
         tableView.tableFooterView = UIView()
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 40
-        tableView.backgroundColor = assets.color.backgroundTableView
+        tableView.backgroundColor = assets.color.tableView
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 112 + 25, bottom: 0, right: 0)
         tableView.separatorColor = assets.color.tableViewSeparator
-        refreshControl.tintColor = assets.color.refreshTint
+        refreshControl = UIRefreshControl()
+        refreshControl.tintColor = assets.color.refreshControl
         refreshControl.addTarget(self, action: #selector(reloadData(button:)), for: .valueChanged)
         tableView.refreshControl = refreshControl
-
         activityIndicatorView = UIActivityIndicatorView()
-        activityIndicatorView.style = .white
+        activityIndicatorView.style = assets.data.activityIndicatorStyle
         view.addSubview(activityIndicatorView)
 
         setFeed(assets.data)
         
-        bannerView = GADBannerView(adSize: kGADAdSizeBanner)
-        view.addSubview(bannerView)
         if let assets = assets, assets.data.enableAds == true, assets.data.adsUnitId.count > 0 {
+            bannerView = GADBannerView(adSize: kGADAdSizeBanner)
+            view.addSubview(bannerView)
             bannerView.snp.makeConstraints { make in
                 make.bottom.equalTo(self.view)
                 make.leading.equalTo(self.view)
@@ -112,14 +112,17 @@ public class MGFeedController: UIViewController {
             bannerView.adUnitID = assets.data.adsUnitId
             bannerView.rootViewController = self
             bannerView.load(GADRequest())
-            bannerView.delegate = self
         }
 
     }
     
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-
+        activityIndicatorView.center = CGPoint(x: (UIScreen.main.bounds.width / 2.0), y: (UIScreen.main.bounds.height / 2.0))
+    }
+    
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         activityIndicatorView.center = CGPoint(x: (UIScreen.main.bounds.width / 2.0), y: (UIScreen.main.bounds.height / 2.0))
     }
     
@@ -167,13 +170,12 @@ public class MGFeedController: UIViewController {
                     let doc: Document = try SwiftSoup.parse(html)
                     let link: Element? = try doc.select("img").first()
                     let linkHref: String = try link?.attr("src") ?? ""
-                    let item = MGFeedItem()
-                    item.title = feedItem.title ?? ""
-                    item.imageUrl = linkHref
-                    item.itemUrl = feedItem.id ?? ""
-                    item.author_pubDate = feedItem.published ?? Date()
-                    item.itemDescription = html
-                    newItems.append(item)
+                    newItems.append(MGFeedItem(
+                        title: feedItem.title ?? "",
+                        imageUrl: linkHref,
+                        date: feedItem.published ?? Date(),
+                        description: html.htmlToPlainText,
+                        itemUrl: feedItem.id ?? ""))
                 } catch Exception.Error( _, _) {
                     //print(type)
                     //print(message)
@@ -235,13 +237,12 @@ public class MGFeedController: UIViewController {
                 url = enclosureUrl
             }
             
-            let item = MGFeedItem()
-            item.title = feedItem.title ?? ""
-            item.imageUrl = url
-            item.itemUrl = feedItem.link ?? ""
-            item.author_pubDate = feedItem.pubDate ?? Date()
-            item.itemDescription = description
-            newItems.append(item)
+            newItems.append(MGFeedItem(
+                title: feedItem.title ?? "",
+                imageUrl: url,
+                date: feedItem.pubDate ?? Date(),
+                description: description.htmlToPlainText,
+                itemUrl: feedItem.link ?? ""))
         })
         self.items = newItems
     }
@@ -257,20 +258,33 @@ extension MGFeedController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MGFeedViewCell") as? MGFeedViewCell else {
             return UITableViewCell(style: .default, reuseIdentifier: "cell")
         }
-        
+
+        cell.backgroundColor = assets.color.tableViewCell
+        cell.contentView.backgroundColor = assets.color.tableViewCell
+
         let item = isFiltering ? filteredItems[indexPath.row] : items[indexPath.row]
         
-        cell.itemImageView.sd_setShowActivityIndicatorView(true)
-        cell.itemImageView.sd_setIndicatorStyle(.white)
-        cell.itemImageView.sd_setImage(with: URL(string: item.imageUrl))
+        cell.headerImageView.sd_setShowActivityIndicatorView(true)
+        cell.headerImageView.sd_setIndicatorStyle(assets.data.activityIndicatorStyle)
+        cell.headerImageView.sd_setImage(with: URL(string: item.imageUrl))
         
-        cell.itemTitleLabel.text = item.title
-        cell.itemDescriptionContentLabel.text = item.itemDescription.htmlToPlainText
+        cell.titleLabel.text = item.title
+        cell.titleLabel.textColor = assets.color.tableViewCellTitle
+        if let font = assets.font.tableViewCellTitle {
+            cell.titleLabel.font = font
+        }
         
-        cell.backgroundColor = assets.color.backgroundViewCell
-        cell.contentView.backgroundColor = assets.color.backgroundViewCell
-        cell.itemTitleLabel.textColor = assets.color.cellTint
-        cell.itemDescriptionContentLabel.textColor = assets.color.cellTint
+        cell.subtitleLabel.text = item.date?.string
+        cell.subtitleLabel.textColor = assets.color.tableViewCellSubtitle
+        if let font = assets.font.tableViewCellTitle {
+            cell.subtitleLabel.font = font
+        }
+
+        cell.descriptionLabel.text = item.description
+        cell.descriptionLabel.textColor = assets.color.tableViewCellDescription
+        if let font = assets.font.tableViewCellDescription {
+            cell.descriptionLabel.font = font
+        }
         
         cell.layoutIfNeeded()
         
@@ -296,7 +310,7 @@ extension MGFeedController {
         return searchController.isActive && !searchBarIsEmpty
     }
     
-    var searchBarIsEmpty:Bool {
+    var searchBarIsEmpty: Bool {
         return searchController.searchBar.text?.isEmpty ?? true
     }
     
@@ -316,7 +330,6 @@ extension MGFeedController: UISearchResultsUpdating {
     }
 }
 
-
 extension MGFeedController {
     
     public static var instance: MGFeedController {
@@ -333,15 +346,19 @@ extension MGFeedController {
 }
 
 class MGFeedViewCell: UITableViewCell {
-    @IBOutlet var itemImageView: UIImageView!
-    @IBOutlet var itemTitleLabel: UILabel!
-    @IBOutlet var itemDescriptionContentLabel: UILabel!
+    @IBOutlet var headerImageView: UIImageView!
+    @IBOutlet var titleLabel: UILabel!
+    @IBOutlet var subtitleLabel: UILabel!
+    @IBOutlet var descriptionLabel: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
+    
 }
 
 fileprivate let storyboardName = "MGFeed"
@@ -349,40 +366,22 @@ fileprivate let controllerIdentifier = "MGFeedController"
 fileprivate let resourceName = "MGFeedKit"
 fileprivate let resourceExtension = "bundle"
 
-extension MGFeedController: GADBannerViewDelegate {
-    
-    /// Tells the delegate an ad request loaded an ad.
-    public func adViewDidReceiveAd(_ bannerView: GADBannerView) {
-        //print("adViewDidReceiveAd")
+public struct MGFeedItem {
+    public let title: String
+    public let imageUrl: String
+    public let date: Date?
+    public let description: String
+    public let itemUrl: String
+}
+
+extension Date {
+
+    var string: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        return dateFormatter.string(from: self)
     }
-    
-    /// Tells the delegate an ad request failed.
-    public func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
-        //print("adView:didFailToReceiveAdWithError: \(error.localizedDescription)")
-    }
-    
-    /// Tells the delegate that a full-screen view will be presented in response
-    /// to the user clicking on an ad.
-    public func adViewWillPresentScreen(_ bannerView: GADBannerView) {
-        //print("adViewWillPresentScreen")
-    }
-    
-    /// Tells the delegate that the full-screen view will be dismissed.
-    public func adViewWillDismissScreen(_ bannerView: GADBannerView) {
-        //print("adViewWillDismissScreen")
-    }
-    
-    /// Tells the delegate that the full-screen view has been dismissed.
-    public func adViewDidDismissScreen(_ bannerView: GADBannerView) {
-        //print("adViewDidDismissScreen")
-    }
-    
-    /// Tells the delegate that a user click will open another app (such as
-    /// the App Store), backgrounding the current app.
-    public func adViewWillLeaveApplication(_ bannerView: GADBannerView) {
-        //print("adViewWillLeaveApplication")
-    }
-    
+
 }
 
 /// Quick-n-dirty translation of MWFeedParser's algorithm from Objective-C to Swift
@@ -468,13 +467,4 @@ extension NSString {
         return result as String // retString;
     }
     
-}
-
-class MGFeedItem {
-    var title: String!
-    var imageUrl: String!
-    var author_pubDate: Date?
-    var itemDescription: String!
-    var itemUrl: String!
-    init() {}
 }

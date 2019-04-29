@@ -39,35 +39,45 @@ public protocol MGFeedString {
     var searchBarPlaceholder: String { get set }
 }
 
-public protocol MGFeedFont {
-    var navigationTitle: UIFont? { get set }
-    var cellTitle: UIFont? { get set }
-    var cellDate: UIFont? { get set }
-    var cellDescription: UIFont? { get set }
+public protocol MGFeedFont {    
+    var tableViewCellTitle: UIFont? { get set }
+    var tableViewCellSubtitle: UIFont? { get set }
+    var tableViewCellDescription: UIFont? { get set }
+    var detailViewTitle: UIFont? { get set }
+    var detailViewSubtitle: UIFont? { get set }
+    var detailViewDescription: UIFont? { get set }
 }
 
 public protocol MGFeedImage {
-    var navigationItemMenu: UIImage { get set }
-    var navigationItemShare: UIImage { get set }
+
 }
 
 public protocol MGFeedColor {
     var navigationBar: UIColor { get set }
-    var navigationBarTint: UIColor { get set }
+    var navigationBarContent: UIColor { get set }
+    var refreshControl: UIColor { get set }
+    var searchBar: UIColor { get set }
+    var searchBarContent: UIColor { get set }
     var toolBar: UIColor { get set }
-    var toolBarTint: UIColor { get set }
-    var backgroundView: UIColor { get set }
-    var backgroundTableView: UIColor { get set }
+    var toolBarContent: UIColor { get set }
+    var view: UIColor { get set }
+    var viewContent: UIColor { get set }
+    var tableView: UIColor { get set }
+    var tableViewContent: UIColor { get set }
     var tableViewSeparator: UIColor { get set }
-    var refreshTint: UIColor { get set }
-    var searchBarTint: UIColor { get set }
-    var backgroundViewCell: UIColor { get set }
-    var cellTint: UIColor { get set }
+    var tableViewCell: UIColor { get set }
+    var tableViewCellContent: UIColor { get set }
+    var collectionView: UIColor { get set }
+    var collectionViewContent: UIColor { get set }
+    var tableViewCellTitle: UIColor { get set }
+    var tableViewCellSubtitle: UIColor { get set }
+    var tableViewCellDescription: UIColor { get set }
 }
 
 public protocol MGFeedData {
     var url: String { get set }
     var enableAds: Bool { get set }
     var adsUnitId: String { get set }
-    var darkKeyboard: Bool { get set }
+    var keyboardAppearance: UIKeyboardAppearance { get set }
+    var activityIndicatorStyle: UIActivityIndicatorView.Style { get set }
 }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="0Hv-UG-YdI">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="0Hv-UG-YdI">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -43,16 +43,22 @@
                                                     </constraints>
                                                 </imageView>
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Tj6-Lj-lZX">
-                                                    <rect key="frame" x="15" y="264" width="345" height="69"/>
+                                                    <rect key="frame" x="15" y="264" width="345" height="80"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" text="Elements of survival" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IIN-Fi-RAd">
-                                                            <rect key="frame" x="0.0" y="0.0" width="345" height="23.5"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="345" height="18.5"/>
+                                                            <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="20"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" text="Elements of survival" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7wN-iN-tRV">
+                                                            <rect key="frame" x="0.0" y="26.5" width="345" height="19"/>
                                                             <fontDescription key="fontDescription" name="Roboto-Medium" family="Roboto" pointSize="20"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" text="Learn how to code by building 25 cool sites and apps in this $12 course" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cpF-Xx-JVX">
-                                                            <rect key="frame" x="0.0" y="31.5" width="345" height="37.5"/>
+                                                            <rect key="frame" x="0.0" y="53.5" width="345" height="26.5"/>
                                                             <fontDescription key="fontDescription" name="Roboto-Regular" family="Roboto" pointSize="16"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
@@ -71,9 +77,10 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="itemDescriptionContentLabel" destination="cpF-Xx-JVX" id="lPL-13-ubZ"/>
-                                            <outlet property="itemImageView" destination="6Yp-NO-vzn" id="WAc-7o-C1Z"/>
-                                            <outlet property="itemTitleLabel" destination="IIN-Fi-RAd" id="8Kg-dD-IiM"/>
+                                            <outlet property="descriptionLabel" destination="cpF-Xx-JVX" id="mQe-Ap-2Sv"/>
+                                            <outlet property="headerImageView" destination="6Yp-NO-vzn" id="etC-ba-2kk"/>
+                                            <outlet property="subtitleLabel" destination="7wN-iN-tRV" id="RqK-to-wRF"/>
+                                            <outlet property="titleLabel" destination="IIN-Fi-RAd" id="4kB-2G-XMa"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -169,10 +176,10 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="itemDateAuthorLabel" destination="prh-Gj-kFm" id="NUP-UV-obD"/>
-                                            <outlet property="itemDescriptionContentLabel" destination="aRM-lo-1jO" id="5Ql-Ft-kya"/>
-                                            <outlet property="itemImageView" destination="AJJ-wR-Q3c" id="dJR-TG-I71"/>
-                                            <outlet property="itemTitleLabel" destination="LbW-qu-Njy" id="99c-Bh-Z9k"/>
+                                            <outlet property="descriptionLabel" destination="aRM-lo-1jO" id="KyD-6x-svo"/>
+                                            <outlet property="headerImageView" destination="AJJ-wR-Q3c" id="lM2-nw-edc"/>
+                                            <outlet property="subtitleLabel" destination="prh-Gj-kFm" id="643-Sf-UxL"/>
+                                            <outlet property="titleLabel" destination="LbW-qu-Njy" id="woM-ek-4a5"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -186,7 +193,7 @@
                         <constraints>
                             <constraint firstItem="sel-rR-So4" firstAttribute="top" secondItem="OY1-t6-6Cl" secondAttribute="top" id="Qvz-iZ-cd8"/>
                             <constraint firstItem="sel-rR-So4" firstAttribute="trailing" secondItem="PeM-r5-wbb" secondAttribute="trailing" id="d8L-jt-qgj"/>
-                            <constraint firstItem="sel-rR-So4" firstAttribute="bottom" secondItem="PeM-r5-wbb" secondAttribute="bottom" id="eQo-Bg-4pB"/>
+                            <constraint firstItem="sel-rR-So4" firstAttribute="bottom" secondItem="OY1-t6-6Cl" secondAttribute="bottom" id="eQo-Bg-4pB"/>
                             <constraint firstItem="sel-rR-So4" firstAttribute="leading" secondItem="PeM-r5-wbb" secondAttribute="leading" id="nt6-lN-7gY"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="PeM-r5-wbb"/>

@@ -26,6 +26,9 @@
 import UIKit
 import SDWebImage
 import GSImageViewerController
+import SnapKit
+import FirebaseCore
+import GoogleMobileAds
 
 
 public class MGFeedDetailController: UIViewController {
@@ -34,7 +37,9 @@ public class MGFeedDetailController: UIViewController {
     public var delegate: MGFeedControllerDelegate?
     public var dataSource: MGFeedControllerDataSource?
     public var assets: MGFeedAsset!
-    var item: MGFeedItem!
+    public var item: MGFeedItem!
+
+    var bannerView: GADBannerView!
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -42,9 +47,9 @@ public class MGFeedDetailController: UIViewController {
         title = assets.string.title
         navigationItem.title = assets.string.title
         
-        view.backgroundColor = assets.color.backgroundView
-        navigationController?.navigationBar.tintColor = assets.color.navigationBarTint
+        view.backgroundColor = assets.color.view
         navigationController?.navigationBar.barTintColor = assets.color.navigationBar
+        navigationController?.navigationBar.tintColor = assets.color.navigationBarContent
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.barStyle = .black
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -63,13 +68,47 @@ public class MGFeedDetailController: UIViewController {
             navigationItem.rightBarButtonItems = items
         }
 
+        if let items = dataSource?.toolBarButtonItems(self) {
+            items.forEach({ $0.target = self })
+            items.forEach({ $0.action = #selector(navigationItemAction(barButtonItem:)) })
+            toolbarItems = items
+            navigationController?.setToolbarHidden(false, animated: true)
+            navigationController?.toolbar.barTintColor = assets.color.toolBar
+            navigationController?.toolbar.tintColor = assets.color.toolBarContent
+            navigationController?.toolbar.isTranslucent = false
+        }
+        
         tableView.tableHeaderView = UIView()
         tableView.tableFooterView = UIView()
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 40
-        tableView.backgroundColor = assets.color.backgroundTableView
+        tableView.backgroundColor = assets.color.tableView
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 112 + 25, bottom: 0, right: 0)
         tableView.separatorColor = assets.color.tableViewSeparator
+        
+        if let assets = assets, assets.data.enableAds == true, assets.data.adsUnitId.count > 0 {
+            bannerView = GADBannerView(adSize: kGADAdSizeBanner)
+            view.addSubview(bannerView)
+            bannerView.snp.makeConstraints { make in
+                make.bottom.equalTo(self.view)
+                make.leading.equalTo(self.view)
+                make.trailing.equalTo(self.view)
+            }
+            bannerView.adUnitID = assets.data.adsUnitId
+            bannerView.rootViewController = self
+            bannerView.load(GADRequest())
+        }
+        
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setToolbarHidden(true, animated: false)
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setToolbarHidden(true, animated: false)
     }
     
     @objc private func navigationItemAction(barButtonItem: UIBarButtonItem) {
@@ -89,32 +128,34 @@ extension MGFeedDetailController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell(frame: .zero)
         }
 
-        cell.backgroundColor = assets.color.backgroundViewCell
-        cell.contentView.backgroundColor = assets.color.backgroundViewCell
+        cell.backgroundColor = assets.color.tableViewCell
+        cell.contentView.backgroundColor = assets.color.tableViewCell
 
-        cell.itemTitleLabel.text = item.title
-        cell.itemTitleLabel.font = assets.font.cellTitle
-        cell.itemTitleLabel.textColor = assets.color.cellTint
+        cell.headerImageView.sd_setShowActivityIndicatorView(true)
+        cell.headerImageView.sd_setIndicatorStyle(assets.data.activityIndicatorStyle)
+        cell.headerImageView.sd_setImage(with: URL(string: item.imageUrl))
 
-        cell.itemImageView.sd_setShowActivityIndicatorView(true)
-        cell.itemImageView.sd_setIndicatorStyle(.white)
-        cell.itemImageView.sd_setImage(with: URL(string: item.imageUrl))
+        cell.titleLabel.text = item.title
+        cell.titleLabel.textColor = assets.color.tableViewCellTitle
+        if let font = assets.font.tableViewCellTitle {
+            cell.titleLabel.font = font
+        }
         
-        let dateFormatterGet = DateFormatter()
-        dateFormatterGet.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
-        let stringFromDate = dateFormatterGet.string(from: item.author_pubDate ?? Date())
-        let pubDate = DateFormatter.formatedDate(dateString: stringFromDate, fromFormat: "yyyy-MM-dd HH:mm:ss Z", toFormat: "dd MMM yyyy")
-        cell.itemDateAuthorLabel.text = pubDate
-        cell.itemDateAuthorLabel.textColor = assets.color.cellTint
-        cell.itemDateAuthorLabel.font = assets.font.cellDate
+        cell.subtitleLabel.text = item.date?.string
+        cell.subtitleLabel.textColor = assets.color.tableViewCellSubtitle
+        if let font = assets.font.tableViewCellTitle {
+            cell.subtitleLabel.font = font
+        }
+        
+        cell.descriptionLabel.text = item.description
+        cell.descriptionLabel.textColor = assets.color.tableViewCellDescription
+        if let font = assets.font.tableViewCellDescription {
+            cell.descriptionLabel.font = font
+        }
 
-        cell.itemDescriptionContentLabel.text = item.itemDescription.htmlToPlainText
-        cell.itemDescriptionContentLabel.textColor = assets.color.cellTint
-        cell.itemDescriptionContentLabel.font = assets.font.cellDescription
-
-        UITapGestureRecognizer(addToView: cell.itemImageView) { [unowned self] gesture in
-            let imageInfo = GSImageInfo(image: cell.itemImageView.image ?? UIImage(), imageMode: .aspectFit, imageHD: nil)
-            let transitionInfo = GSTransitionInfo(fromView: cell.itemImageView)
+        UITapGestureRecognizer(addToView: cell.headerImageView) { [unowned self] gesture in
+            let imageInfo = GSImageInfo(image: cell.headerImageView.image ?? UIImage(), imageMode: .aspectFit, imageHD: nil)
+            let transitionInfo = GSTransitionInfo(fromView: cell.headerImageView)
             let imageViewer = GSImageViewerController(imageInfo: imageInfo, transitionInfo: transitionInfo)
             self.present(imageViewer, animated: true, completion: nil)
         }
@@ -125,10 +166,10 @@ extension MGFeedDetailController: UITableViewDelegate, UITableViewDataSource {
 }
 
 class MGFeedDetailViewCell: UITableViewCell {
-    @IBOutlet var itemImageView: UIImageView!
-    @IBOutlet var itemTitleLabel: UILabel!
-    @IBOutlet var itemDateAuthorLabel: UILabel!
-    @IBOutlet var itemDescriptionContentLabel: UILabel!
+    @IBOutlet var headerImageView: UIImageView!
+    @IBOutlet var titleLabel: UILabel!
+    @IBOutlet var subtitleLabel: UILabel!
+    @IBOutlet var descriptionLabel: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
     }

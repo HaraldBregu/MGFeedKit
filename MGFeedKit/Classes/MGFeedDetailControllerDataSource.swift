@@ -28,4 +28,5 @@ import Foundation
 public protocol MGFeedControllerDataSource {
     func leftBarButtonItems(_ controller: UIViewController) -> [UIBarButtonItem]
     func rightBarButtonItems(_ controller: UIViewController) -> [UIBarButtonItem]
+    func toolBarButtonItems(_ controller: UIViewController) -> [UIBarButtonItem]
 }
