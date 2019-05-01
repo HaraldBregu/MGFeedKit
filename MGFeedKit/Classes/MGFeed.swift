@@ -43,9 +43,6 @@ public protocol MGFeedFont {
     var tableViewCellTitle: UIFont? { get set }
     var tableViewCellSubtitle: UIFont? { get set }
     var tableViewCellDescription: UIFont? { get set }
-    var detailViewTitle: UIFont? { get set }
-    var detailViewSubtitle: UIFont? { get set }
-    var detailViewDescription: UIFont? { get set }
 }
 
 public protocol MGFeedImage {

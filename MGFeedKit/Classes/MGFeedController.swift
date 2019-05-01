@@ -276,7 +276,7 @@ extension MGFeedController: UITableViewDelegate, UITableViewDataSource {
         
         cell.subtitleLabel.text = item.date?.string
         cell.subtitleLabel.textColor = assets.color.tableViewCellSubtitle
-        if let font = assets.font.tableViewCellTitle {
+        if let font = assets.font.tableViewCellSubtitle {
             cell.subtitleLabel.font = font
         }
 

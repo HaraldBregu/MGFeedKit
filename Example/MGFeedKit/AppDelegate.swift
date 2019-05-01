@@ -36,10 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             font: FeedFont(
                 tableViewCellTitle: nil,
                 tableViewCellSubtitle: nil,
-                tableViewCellDescription: nil,
-                detailViewTitle: nil,
-                detailViewSubtitle: nil,
-                detailViewDescription: nil),
+                tableViewCellDescription: nil),
             image: FeedImage(),
             color: FeedColor(
                 navigationBar: .black,
@@ -195,16 +192,8 @@ struct FeedString: MGFeedString {
 
 struct FeedFont: MGFeedFont {
     var tableViewCellTitle: UIFont?
-    
     var tableViewCellSubtitle: UIFont?
-    
     var tableViewCellDescription: UIFont?
-    
-    var detailViewTitle: UIFont?
-    
-    var detailViewSubtitle: UIFont?
-    
-    var detailViewDescription: UIFont?
 }
 
 struct FeedImage: MGFeedImage {
