@@ -126,6 +126,23 @@ public class MGFeedController: UIViewController {
         activityIndicatorView.center = CGPoint(x: (UIScreen.main.bounds.width / 2.0), y: (UIScreen.main.bounds.height / 2.0))
     }
     
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        if let items = dataSource?.leftBarButtonItems(self) {
+            items.forEach({ $0.target = self })
+            items.forEach({ $0.action = #selector(navigationItemAction(barButtonItem:)) })
+            navigationItem.leftBarButtonItems = items
+            navigationItem.leftItemsSupplementBackButton = true
+        }
+        
+        if let items = dataSource?.rightBarButtonItems(self) {
+            items.forEach({ $0.target = self })
+            items.forEach({ $0.action = #selector(navigationItemAction(barButtonItem:)) })
+            navigationItem.rightBarButtonItems = items
+        }
+    }
+
     @objc private func navigationItemAction(barButtonItem: UIBarButtonItem) {
         self.delegate?.controller(self, didTapBarButtonItem: barButtonItem)
     }
